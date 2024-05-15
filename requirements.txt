@@ -1,9 +1,13 @@
 langchain
 openai
 tiktoken
-faiss-gpu
 langchain_experimental
 langchain[docarray]
 pylcs
 pypdf
-pypdf2
+langchain-groq
+python-dotenv
+ragas
+pyPDF2
+faiss-cpu
+langgraph

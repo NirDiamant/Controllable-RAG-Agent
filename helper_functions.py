@@ -85,6 +85,18 @@ def split_into_chapters(book_path):
     return chapter_docs
 
 
+def escape_double_quotes(text):
+  """Escapes double quotes in a string by replacing them with \"
+
+  Args:
+    text: The string to escape.
+
+  Returns:
+    The string with double quotes escaped.
+  """
+  return text.replace('"', '\\"')
+
+
 def is_similarity_ratio_lower_than_th(large_string, short_string, th):
     """
     Checks if the similarity ratio between two strings is lower than a given threshold.
