@@ -11,3 +11,4 @@ ragas
 pyPDF2
 faiss-cpu
 langgraph
+langchainhub
