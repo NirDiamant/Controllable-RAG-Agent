@@ -85,16 +85,27 @@ def split_into_chapters(book_path):
     return chapter_docs
 
 
-def escape_double_quotes(text):
-  """Escapes double quotes in a string by replacing them with \"
+# def escape_double_quotes(text):
+#   """Escapes double quotes in a string by replacing them with \"
+
+#   Args:
+#     text: The string to escape.
+
+#   Returns:
+#     The string with double quotes escaped.
+#   """
+#   return text.replace('"', '\\"')
+
+def escape_quotes(text):
+  """Escapes both single and double quotes in a string.
 
   Args:
     text: The string to escape.
 
   Returns:
-    The string with double quotes escaped.
+    The string with single and double quotes escaped.
   """
-  return text.replace('"', '\\"')
+  return text.replace('"', '\\"').replace("'", "\\'")
 
 
 def is_similarity_ratio_lower_than_th(large_string, short_string, th):
