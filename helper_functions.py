@@ -123,6 +123,53 @@ def format_state_past_steps(state: dict) -> dict:
   return formatted_state
 
 
+def clean_empty_fields_dictionary(dictionary):
+  """
+  Cleans a dictionary by removing entries with certain conditions:
+
+  - Removes the 'response' key if its value is None.
+  - Removes the 'plan' key if its value is an empty list.
+
+  Args:
+    dictionary: The dictionary to clean.
+
+  Returns:
+    The cleaned dictionary.
+  """
+
+  # Create a copy of the dictionary to avoid modifying the original
+  cleaned_dictionary = dictionary.copy()
+
+  # Remove 'response' if its value is None
+  if 'response' in cleaned_dictionary and cleaned_dictionary['response'] == None:
+    del cleaned_dictionary['response']
+
+  # Remove 'plan' if its value is an empty list
+  if 'plan' in cleaned_dictionary and cleaned_dictionary['plan'] == []:
+    del cleaned_dictionary['plan']
+
+  return cleaned_dictionary
+
+
+def process_replanner_output(data):
+  """
+  This function processes a dictionary with 'plan' and 'response' keys.
+  If 'response' is empty, it returns the dictionary without the 'plan' key.
+  Otherwise, it returns the dictionary with only the 'plan' key.
+
+  Args:
+      data (dict): A dictionary with 'plan' and 'response' keys.
+
+  Returns:
+      dict: A processed dictionary.
+  """
+  if data['plan']['steps']!=[]:
+    return {'plan': data['plan']['steps']}
+   
+  else:
+    return {'response': data['response']}
+
+
 def is_similarity_ratio_lower_than_th(large_string, short_string, th):
     """
     Checks if the similarity ratio between two strings is lower than a given threshold.
