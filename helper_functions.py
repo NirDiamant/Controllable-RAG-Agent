@@ -108,6 +108,21 @@ def escape_quotes(text):
   return text.replace('"', '\\"').replace("'", "\\'")
 
 
+def format_state_past_steps(state: dict) -> dict:
+  """Formats the state dictionary for use with the replanner.
+
+  Args:
+    state: The state dictionary.
+
+  Returns:
+    The formatted state dictionary.
+  """
+
+  formatted_state = state.copy()
+  formatted_state['past_steps'] = '\n'.join(formatted_state['past_steps'])
+  return formatted_state
+
+
 def is_similarity_ratio_lower_than_th(large_string, short_string, th):
     """
     Checks if the similarity ratio between two strings is lower than a given threshold.
