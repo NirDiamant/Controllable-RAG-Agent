@@ -163,11 +163,15 @@ def process_replanner_output(data):
   Returns:
       dict: A processed dictionary.
   """
-  if data['plan']['steps']!=[]:
-    return {'plan': data['plan']['steps']}
+
+  plan =data['plan']['steps']
+  response = data['response']
+  return {'plan': plan, 'response': response}
+#   if data['plan']['steps']!=[]:
+#     return {'plan': data['plan']['steps']}
    
-  else:
-    return {'response': data['response']}
+#   else:
+#     return {'response': data['response']}
 
 
 def is_similarity_ratio_lower_than_th(large_string, short_string, th):
