@@ -4,6 +4,8 @@ from langchain.docstore.document import Document
 import PyPDF2
 import pylcs
 import pandas as pd
+import textwrap
+
 
 def num_tokens_from_string(string: str, encoding_name: str) -> int:
     """
@@ -172,6 +174,20 @@ def process_replanner_output(data):
    
 #   else:
 #     return {'response': data['response']}
+
+
+def text_wrap(text, width=120):
+    """
+    Wraps the input text to the specified width.
+
+    Args:
+        text (str): The input text to wrap.
+        width (int): The width at which to wrap the text.
+
+    Returns:
+        str: The wrapped text.
+    """
+    return textwrap.fill(text, width=width)
 
 
 def is_similarity_ratio_lower_than_th(large_string, short_string, th):
