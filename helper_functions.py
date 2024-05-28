@@ -87,16 +87,6 @@ def split_into_chapters(book_path):
     return chapter_docs
 
 
-# def escape_double_quotes(text):
-#   """Escapes double quotes in a string by replacing them with \"
-
-#   Args:
-#     text: The string to escape.
-
-#   Returns:
-#     The string with double quotes escaped.
-#   """
-#   return text.replace('"', '\\"')
 
 def escape_quotes(text):
   """Escapes both single and double quotes in a string.
@@ -109,71 +99,6 @@ def escape_quotes(text):
   """
   return text.replace('"', '\\"').replace("'", "\\'")
 
-
-def format_state_past_steps(state: dict) -> dict:
-  """Formats the state dictionary for use with the replanner.
-
-  Args:
-    state: The state dictionary.
-
-  Returns:
-    The formatted state dictionary.
-  """
-
-  formatted_state = state.copy()
-  formatted_state['past_steps'] = '\n'.join(formatted_state['past_steps'])
-  return formatted_state
-
-
-def clean_empty_fields_dictionary(dictionary):
-  """
-  Cleans a dictionary by removing entries with certain conditions:
-
-  - Removes the 'response' key if its value is None.
-  - Removes the 'plan' key if its value is an empty list.
-
-  Args:
-    dictionary: The dictionary to clean.
-
-  Returns:
-    The cleaned dictionary.
-  """
-
-  # Create a copy of the dictionary to avoid modifying the original
-  cleaned_dictionary = dictionary.copy()
-
-  # Remove 'response' if its value is None
-  if 'response' in cleaned_dictionary and cleaned_dictionary['response'] == None:
-    del cleaned_dictionary['response']
-
-  # Remove 'plan' if its value is an empty list
-  if 'plan' in cleaned_dictionary and cleaned_dictionary['plan'] == []:
-    del cleaned_dictionary['plan']
-
-  return cleaned_dictionary
-
-
-def process_replanner_output(data):
-  """
-  This function processes a dictionary with 'plan' and 'response' keys.
-  If 'response' is empty, it returns the dictionary without the 'plan' key.
-  Otherwise, it returns the dictionary with only the 'plan' key.
-
-  Args:
-      data (dict): A dictionary with 'plan' and 'response' keys.
-
-  Returns:
-      dict: A processed dictionary.
-  """
-
-  plan =data['plan']['steps']
-  response = data['response']
-  return {'plan': plan, 'response': response}
-#   if data['plan']['steps']!=[]:
-#     return {'plan': data['plan']['steps']}
-   
-#   else:
-#     return {'response': data['response']}
 
 
 def text_wrap(text, width=120):
