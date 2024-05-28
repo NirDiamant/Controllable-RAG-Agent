@@ -30,6 +30,8 @@ In order to solve this question, the following steps have to be done:
 
 ## For this I suggest the following deterministic agent solution schema:
 
+<imgs src="final_graph_schema.jpeg" width="200">
+
 ![solution schema](final_graph_schema.jpeg)
 
 
@@ -60,7 +62,7 @@ In order to solve this question, the following steps have to be done:
 
 ## Detailed Explanation
 
-The notebook utilizes large language models (LLMs) such as GPT-3.5-turbo and LLaMA3-70B-8192 to generate summaries and encode the text into vector stores using `FAISS` for efficient retrieval.
+The notebook utilizes large language models (LLMs) such as GPT-3.5-turbo, GPT-4o and LLaMA3-70B-8192 to generate summaries and encode the text into vector stores using `FAISS` for efficient retrieval.
 
 ### Graph-based Workflow
 
