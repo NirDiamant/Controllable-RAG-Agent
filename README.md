@@ -65,7 +65,7 @@ To solve this question, the following steps are necessary:
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/NirDiamant/RAG-Harry-Potter.git
+    git clone https://github.com/NirDiamant/AdvancedRAG-Solution-Agent.git
     ```
 
 2. Install the required Python packages:
