@@ -32,19 +32,19 @@ To solve this question, the following steps are necessary:
 3. Generate a high-level plan to answer the anonymized question using a language model.
 4. De-anonymize the plan by replacing the variables with the original named entities.
 5. Break down the plan into individual tasks that involve either retrieving relevant information or answering a question based on a given context.
-6. For each task in the plan:
-    a. Decide whether to retrieve information or answer a question based on the task and the current context.
-    b. If retrieving information:
-        i. Retrieve relevant information from the vector store based on the task.
-        ii. Distill the retrieved information to keep only the relevant content.
-        iii. Verify that the distilled content is grounded in the original context. If not, distill the content again.
-    c. If answering a question:
-        i. Answer the question based on the current context using a language model.
-        ii. Verify that the generated answer is grounded in the context. If not, answer the question again.
-    d. After retrieving or answering, re-plan the remaining steps based on the updated context.
-    e. Check if the original question can be answered with the current context. If so, proceed to the final answer step. Otherwise, continue with the next task in the plan.
-7. Generate the final answer to the original question based on the accumulated context.
-8. Verify that the final answer is grounded in the context. If not, generate the final answer again.
+6. For each task in the plan: <br>
+    a. Decide whether to retrieve information or answer a question based on the task and the current context.<br>
+    b. If retrieving information:<br>
+        i. Retrieve relevant information from the vector store based on the task. <br>
+        ii. Distill the retrieved information to keep only the relevant content.<br>
+        iii. Verify that the distilled content is grounded in the original context. If not, distill the content again.<br>
+    c. If answering a question:<br>
+        i. Answer the question based on the current context using a language model.<br>
+        ii. Verify that the generated answer is grounded in the context. If not, answer the question again.<br>
+    d. After retrieving or answering, re-plan the remaining steps based on the updated context.<br>
+    e. Check if the original question can be answered with the current context. If so, proceed to the final answer step. Otherwise, continue with the next task in the plan.<br>
+7. Generate the final answer to the original question based on the accumulated context.<br>
+8. Verify that the final answer is grounded in the context. If not, generate the final answer again.<br>
 9. Output the final answer to the user.
 
 ## Heuristics and Techniques Implemented in This Solution:
