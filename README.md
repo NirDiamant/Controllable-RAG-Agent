@@ -1,6 +1,11 @@
 # Sophisticated Deterministic Agent for Complex RAG Tasks
 
-This repository presents an advanced RAG solution designed to answer complex questions that cannot be solved by simple retrieval based on semantic similarity.
+This repository showcases an advanced RAG (Retrieval-Augmented Generation) solution designed to tackle complex questions that simple semantic similarity-based retrieval cannot solve. The solution uses a sophisticated deterministic graph, which acts as the "brain" of a highly controllable autonomous agent capable of answering non-trivial questions from your own data. The only elements treated as black boxes are the outputs of LLM-based (Large Language Model) functions, and these are closely monitored. Given that the data is yours, it is crucial to ensure that the answers provided are solely based on this data, avoiding any hallucinations.
+
+To achieve this, the algorithm was tested using a familiar use case: the first book of Harry Potter. This choice allows for monitoring whether the model relies on its pre-trained knowledge or strictly on the retrieved information from vector stores.
+
+An indicator of the algorithm’s reliability is its ability to fail at answering questions not found in the context. When it successfully answers a question derived from the context, it confirms that the solution is based on the actual data provided. If it fails, it is because the answer could not be deduced from the available data.
+
 
 ### Example of Such Questions:
 #### How did the protagonist defeat the villain's assistant?
@@ -20,6 +25,7 @@ To solve this question, the following steps are necessary:
 4. **Vector Store Encoding:** Encode the book content and chapter summaries into vector stores for efficient retrieval.
 5. **Define Various LLM-Based Functions:** Define functions for the graph pipeline, including planning, retrieval, answering, replanning, content distillation, hallucination checking, etc.
 6. **Graph-Based Workflow:** Utilize a state graph to manage the workflow of tasks.
+7. **Performance evaluation:** Evaluate how well the whole solution solved complicated questions.
 
 ## Suggested Deterministic Agent Solution Schema:
 
@@ -73,7 +79,7 @@ To solve this question, the following steps are necessary:
     pip install -r requirements.txt
     ```
 
-3. Set up your environment variables:
+3. Set up your environment variables (The models I used were trying to minimize the cost, but this is just a suggestion):
     Create a `.env` file in the root directory and add your API keys:
     ```
     OPENAI_API_KEY=your_openai_api_key
@@ -86,4 +92,4 @@ Contributions are welcome! Please feel free to submit a pull request or open an 
 
 ### Special Thanks
 
-Special thanks to Elad Levy for the great advising and ideas.
+Special thanks to Elad Levi for the great advising and ideas.
