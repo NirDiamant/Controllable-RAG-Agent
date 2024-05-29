@@ -63,11 +63,11 @@ To solve this question, the following steps are necessary:
 6. Utilizing an ongoing updated plan made by an LLM to solve complicated questions. Some ideas are derived from "Plan-and-Solve Prompting" - https://arxiv.org/abs/2305.04091 and the "babyagi" project - https://github.com/yoheinakajima/babyagi.<br>
 7. Evaluating the model's performance using `Ragas` metrics like answer correctness, faithfulness, relevancy, recall, and similarity to ensure high-quality answers.<br>
 
-### Prerequisites
+## Prerequisites
 
 - Python 3.8+
 
-### Installation
+## Installation
 
 1. Clone the repository:
     ```sh
@@ -89,6 +89,10 @@ To solve this question, the following steps are necessary:
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a pull request or open an issue for any suggestions or improvements.
+
+## License 
+
+This project is licensed under the Apache-2.0 License.
 
 ### Special Thanks
 
