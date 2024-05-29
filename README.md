@@ -90,10 +90,12 @@ To solve this question, the following steps are necessary:
 
 Contributions are welcome! Please feel free to submit a pull request or open an issue for any suggestions or improvements.
 
+## Special Thanks
+
+Special thanks to Elad Levi for the great advising and ideas.
+
 ## License 
 
 This project is licensed under the Apache-2.0 License.
 
-### Special Thanks
 
-Special thanks to Elad Levi for the great advising and ideas.
