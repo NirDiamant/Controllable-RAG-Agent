@@ -71,7 +71,7 @@ To solve this question, the following steps are necessary:
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/NirDiamant/AdvancedRAG-Solution-Agent.git
+    git clone https://github.com/NirDiamant/Deterministic-RAG-Agent.git
     ```
 
 2. Install the required Python packages:
