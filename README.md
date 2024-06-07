@@ -45,11 +45,11 @@ To solve this question, the following steps are necessary:
 &emsp;&emsp;&emsp;&emsp;ii. Distill the retrieved information to keep only the relevant content.<br>
 &emsp;&emsp;&emsp;&emsp;iii. Verify that the distilled content is grounded in the original context. If not, distill the content again.<br>
 &emsp;&emsp;c. If answering a question:<br>
-&emsp;&emsp;&emsp;&emsp;i. Answer the question based on the current context using a language model.<br>
+&emsp;&emsp;&emsp;&emsp;i. Answer the question based on the current context using a language model, using chain of thought.<br>
 &emsp;&emsp;&emsp;&emsp;ii. Verify that the generated answer is grounded in the context. If not, answer the question again.<br>
 &emsp;&emsp;d. After retrieving or answering, re-plan the remaining steps based on the updated context.<br>
 &emsp;&emsp;e. Check if the original question can be answered with the current context. If so, proceed to the final answer step. Otherwise, continue with the next task in the plan.<br>
-7. Generate the final answer to the original question based on the accumulated context.<br>
+7. Generate the final answer to the original question based on the accumulated context, using chain of thought.<br>
 8. Verify that the final answer is grounded in the context. If not, generate the final answer again.<br>
 9. Output the final answer to the user.<br>
 
@@ -59,9 +59,10 @@ To solve this question, the following steps are necessary:
 2. Anonymizing the question to create a general plan without biases or pre-trained knowledge of any LLM involved.<br>
 3. Breaking down each task from the plan to be executed by custom functions with full control.<br>
 4. Distilling retrieved content for better and accurate LLM generations, minimizing hallucinations.<br>
-5. Content verification and hallucination-free verification as suggested in "Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection" - https://arxiv.org/abs/2310.11511.<br>
-6. Utilizing an ongoing updated plan made by an LLM to solve complicated questions. Some ideas are derived from "Plan-and-Solve Prompting" - https://arxiv.org/abs/2305.04091 and the "babyagi" project - https://github.com/yoheinakajima/babyagi.<br>
-7. Evaluating the model's performance using `Ragas` metrics like answer correctness, faithfulness, relevancy, recall, and similarity to ensure high-quality answers.<br>
+5. Answering a question based on context using a Chain of Thought, which includes both positive and negative examples, to arrive at a well-reasoned answer rather than just a straightforward response.<br>
+6. Content verification and hallucination-free verification as suggested in "Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection" - https://arxiv.org/abs/2310.11511.<br>
+7. Utilizing an ongoing updated plan made by an LLM to solve complicated questions. Some ideas are derived from "Plan-and-Solve Prompting" - https://arxiv.org/abs/2305.04091 and the "babyagi" project - https://github.com/yoheinakajima/babyagi.<br>
+8. Evaluating the model's performance using `Ragas` metrics like answer correctness, faithfulness, relevancy, recall, and similarity to ensure high-quality answers.<br>
 
 ## Prerequisites
 
