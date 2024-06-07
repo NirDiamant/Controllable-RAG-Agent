@@ -1,4 +1,4 @@
-# Sophisticated Deterministic Agent for Complex RAG Tasks
+# Sophisticated Controllable Agent for Complex RAG Tasks
 
 This repository showcases an advanced RAG (Retrieval-Augmented Generation) solution designed to tackle complex questions that simple semantic similarity-based retrieval cannot solve. The solution uses a sophisticated deterministic graph, which acts as the "brain" of a highly controllable autonomous agent capable of answering non-trivial questions from your own data. The only elements treated as black boxes are the outputs of LLM-based (Large Language Model) functions, and these are closely monitored. Given that the data is yours, it is crucial to ensure that the answers provided are solely based on this data, avoiding any hallucinations.
 
