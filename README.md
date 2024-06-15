@@ -29,7 +29,7 @@ To solve this question, the following steps are necessary:
 
 ## Suggested Deterministic Agent Solution Schema:
 
-![Solution Schema](final_graph_schema.jpeg)
+![Solution Schema](graphs\final_graph_schema.jpeg)
 
 ## Algorithm Represented by the Graph:
 

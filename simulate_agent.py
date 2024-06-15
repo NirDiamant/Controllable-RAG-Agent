@@ -18,7 +18,9 @@ from typing import List, TypedDict
 import streamlit as st
 from pyvis.network import Network
 import tempfile
-import langgraph
+
+
+import streamlit.components.v1 as components
 
 
 ### Helper functions for the notebook
@@ -30,11 +32,6 @@ os.environ["PYDEVD_WARN_EVALUATION_TIMEOUT"] = "100000"
 
 os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY')
 groq_api_key = os.getenv('GROQ_API_KEY')
-
-
-
-
-
 
 
 
@@ -965,148 +962,17 @@ def create_agent():
 
 
 
-
-# def create_network_graph(current_state):
-#     net = Network(directed=True)
-    
-#     nodes = [
-#         {"id": "anonymize_question", "label": "anonymize_question"},
-#         {"id": "planner", "label": "planner"},
-#         {"id": "de_anonymize_plan", "label": "de_anonymize_plan"},
-#         {"id": "break_down_plan", "label": "break_down_plan"},
-#         {"id": "task_handler", "label": "task_handler"},
-#         {"id": "retrieve", "label": "retrieve"},
-#         {"id": "answer", "label": "answer"},
-#         {"id": "replan", "label": "replan"},
-#         {"id": "can_be_answered_already", "label": "can_be_answered_already"},
-#         {"id": "get_final_answer", "label": "get_final_answer"}
-#     ]
-    
-#     edges = [
-#         ("anonymize_question", "planner"),
-#         ("planner", "de_anonymize_plan"),
-#         ("de_anonymize_plan", "break_down_plan"),
-#         ("break_down_plan", "task_handler"),
-#         ("task_handler", "retrieve"),
-#         ("task_handler", "answer"),
-#         ("retrieve", "replan"),
-#         ("answer", "replan"),
-#         ("replan", "can_be_answered_already"),
-#         ("can_be_answered_already", "get_final_answer")
-#     ]
-    
-#     for node in nodes:
-#         color = "green" if node["id"] == current_state else "pink"
-#         net.add_node(node["id"], label=node["label"], color=color)
-    
-#     for edge in edges:
-#         net.add_edge(*edge)
-    
-#     return net
-
-# def save_and_display_graph(net):
-#     with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp_file:
-#         net.write_html(tmp_file.name)
-#         return tmp_file.name
-
-# def execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, graph_placeholder, recursion_limit=15):
-#     """
-#     Execute the plan and print the steps.
-#     Args:
-#         inputs: The inputs to the plan.
-#         recursion_limit: The recursion limit.
-#     Returns:
-#         The response and the final state.
-#     """
-#     config = {"recursion_limit": recursion_limit}
-#     agent_state_value = None
-#     progress_bar = st.progress(0)
-#     step = 0
-
-#     try:    
-#         for plan_output in plan_and_execute_app.stream(inputs, config=config):
-#             step += 1
-#             for _, agent_state_value in plan_output.items():
-#                 # Update placeholders
-#                 for key, placeholder in placeholders.items():
-#                     if key in agent_state_value and key != "curr_state":
-#                         if key in ["plan", "past_steps"] and isinstance(agent_state_value[key], list):
-#                             formatted_value = "\n".join([f"{i+1}. {item}" for i, item in enumerate(agent_state_value[key])])
-#                         else:
-#                             formatted_value = agent_state_value[key]
-#                         placeholder.markdown(f"{formatted_value}")
-                
-#                 current_state = agent_state_value["curr_state"]
-#                 net = create_network_graph(current_state)
-#                 graph_filename = save_and_display_graph(net)
-#                 with open(graph_filename, "r") as f:
-#                     graph_html = f.read()
-#                 graph_placeholder.markdown(f'<div style="height:600px;">{graph_html}</div>', unsafe_allow_html=True)
-                
-#                 progress_bar.progress(step / recursion_limit)
-#                 if step >= recursion_limit:
-#                     break
-#         response = agent_state_value['response'] if agent_state_value else "No response found."
-#     except langgraph.pregel.GraphRecursionError:
-#         response = "The answer wasn't found in the data."
-#     final_state = agent_state_value
-
-#     st.write(f'The final answer is: {response}')
-#     return response
-
-# def main():
-#     st.set_page_config(layout="wide")  # Use wide layout
-
-#     st.title("Real-Time Agent Execution Visualization")
-    
-#     # Load your existing agent creation function
-#     plan_and_execute_app = create_agent()
-
-#     # Get the user's question
-#     question = st.text_input("Enter your question:", "what did professor lupin teach?")
-
-#     if st.button("Run Agent"):
-#         inputs = {"question": question}
-        
-#         # Create columns for the keys of interest
-#         col1, col2, col3, col4 = st.columns([1, 2, 2, 4])
-        
-#         with col1:
-#             st.markdown("**Graph**")
-#         with col2:
-#             st.markdown("**plan**")
-#         with col3:
-#             st.markdown("**past_steps**")
-#         with col4:
-#             st.markdown("**aggregated_context**")
-
-#         # Initialize placeholders for each column
-#         placeholders = {
-#             "plan": col2.empty(),
-#             "past_steps": col3.empty(),
-#             "aggregated_context": col4.empty(),
-#         }
-        
-#         # Placeholder for the graph (use col1 for graph)
-#         graph_placeholder = col1.empty()
-
-#         response = execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, graph_placeholder)
-#         st.write("Final Answer:")
-#         st.write(response)
-
-# if __name__ == "__main__":
-#     main()
-
-
-
-import streamlit as st
-import tempfile
-from pyvis.network import Network
-import streamlit.components.v1 as components
-
-
-
 def create_network_graph(current_state):
+    '''
+    Create a network graph visualization of the agent's current state.
+
+    Args:
+        current_state (str): The current state of the agent.
+
+    Returns:
+        net (Network): The network graph visualization.
+
+    '''
     net = Network(directed=True, notebook=True, height="250px", width="100%")
     net.toggle_physics(False)  # Disable physics simulation
     
@@ -1153,18 +1019,53 @@ def create_network_graph(current_state):
     return net
 
 def compute_initial_positions(net):
+    '''
+    Compute the initial positions of the nodes in the network graph.
+
+    Args:
+        net (Network): The network graph.
+
+    Returns:
+        positions (dict): The initial positions of the nodes.
+
+    '''
     net.barnes_hut()
     return {node['id']: (node['x'], node['y']) for node in net.nodes}
 
 
 def save_and_display_graph(net):
+    '''
+    Save the network graph to an HTML file and display it in Streamlit.
+
+    Args:
+        net (Network): The network graph.
+
+    Returns:
+        graph_html (str): The HTML content of the network graph.
+
+    '''
     with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".html") as tmp_file:
         net.write_html(tmp_file.name, notebook=True)
         tmp_file.flush()
         with open(tmp_file.name, "r", encoding="utf-8") as f:
             return f.read()
+        
 
 def execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, graph_placeholder, recursion_limit=15):
+    '''
+    Execute the plan and print the steps in the Streamlit app.
+
+    Args:
+        inputs (dict): The inputs to the plan.
+        plan_and_execute_app (StateGraph): The compiled plan and execute app.
+        placeholders (dict): The placeholders to display the steps.
+        graph_placeholder (Streamlit placeholder): The placeholder to display the network graph.
+        recursion_limit (int): The recursion limit for the plan execution.
+
+    Returns:
+        response (str): The final response from the agent.
+
+    '''
     config = {"recursion_limit": recursion_limit}
     agent_state_value = None
     progress_bar = st.progress(0)
@@ -1223,6 +1124,7 @@ def execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, gra
     return response
 
 def main():
+
     st.set_page_config(layout="wide")  # Use wide layout
 
     st.title("Real-Time Agent Execution Visualization")
@@ -1231,7 +1133,7 @@ def main():
     plan_and_execute_app = create_agent()
 
     # Get the user's question
-    question = st.text_input("Enter your question:", "how did harry beat quirrell?")
+    question = st.text_input("Enter your question:", "what is the class that the proffessor who helped the villain is teaching?")
 
     if st.button("Run Agent"):
         inputs = {"question": question}
@@ -1241,7 +1143,7 @@ def main():
         graph_placeholder = st.empty()
 
         # Create three columns for the other variables
-        col1, col2, col3 = st.columns([1, 1, 2])
+        col1, col2, col3 = st.columns([1, 1, 4])
         
         with col1:
             st.markdown("**Plan**")
@@ -1257,7 +1159,7 @@ def main():
             "aggregated_context": col3.empty(),
         }
 
-        response = execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, graph_placeholder)
+        response = execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, graph_placeholder, recursion_limit=30)
         st.write("Final Answer:")
         st.write(response)
 
