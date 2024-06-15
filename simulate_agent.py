@@ -1144,6 +1144,13 @@ def create_network_graph(current_state):
     
     return net
 
+
+import base64
+
+def serve_graph_html(html_content):
+    b64 = base64.b64encode(html_content.encode()).decode()
+    return f"data:text/html;base64,{b64}"
+
 def save_and_display_graph(net):
     with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".html") as tmp_file:
         net.write_html(tmp_file.name, notebook=True)
@@ -1174,11 +1181,10 @@ def execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, gra
                 net = create_network_graph(current_state)
                 graph_html = save_and_display_graph(net)
                 
-                # **Clear the placeholder before updating**
+                # Update the graph
                 graph_placeholder.empty()
-                
-                # **Update the graph using components.html **
-                components.html(graph_html, height=600)  
+                with graph_placeholder.container():
+                    components.html(graph_html, height=600, scrolling=True)
 
                 progress_bar.progress(step / recursion_limit)
                 if step >= recursion_limit:
@@ -1190,6 +1196,7 @@ def execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, gra
 
     st.write(f'The final answer is: {response}')
     return response
+
 
 def main():
     st.set_page_config(layout="wide")  # Use wide layout
