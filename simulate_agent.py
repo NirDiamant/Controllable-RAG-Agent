@@ -718,7 +718,7 @@ def run_qualitative_retrieval_workflow(state):
     Returns:
         The state with the updated aggregated context.
     """
-    state["curr_state"] = "qualitative_retrieval"
+    state["curr_state"] = "retrieve"
     print("Running the qualitative retrieval workflow...")
     question = state["query_to_retrieve_or_answer"]
     inputs = {"question": question}
@@ -741,7 +741,7 @@ def run_qualtative_answer_workflow(state):
     Returns:
         The state with the updated aggregated context.
     """
-    state["curr_state"] = "qualitative_answer"
+    state["curr_state"] = "answer"
     print("Running the qualitative answer workflow...")
     question = state["query_to_retrieve_or_answer"]
     context = state["curr_context"]
@@ -763,7 +763,7 @@ def run_qualtative_answer_workflow_for_final_answer(state):
     Returns:
         The state with the updated response.
     """
-    state["curr_state"] = "qualitative_answer_final"
+    state["curr_state"] = "get_final_answer"
     print("Running the qualitative answer workflow for final answer...")
     question = state["question"]
     context = state["aggregated_context"]
@@ -784,7 +784,7 @@ def anonymize_queries(state: PlanExecute):
     Returns:
         The updated state with the anonymized question and mapping.
     """
-    state["curr_state"] = "anonymize"
+    state["curr_state"] = "anonymize_question"
     print("Anonymizing question")
     pprint("--------------------")
     anonymized_question_output = anonymize_question_chain.invoke(state['question'])
@@ -805,7 +805,7 @@ def deanonymize_queries(state: PlanExecute):
     Returns:
         The updated state with the de-anonymized plan.
     """
-    state["curr_state"] = "deanonymize"
+    state["curr_state"] = "de_anonymize_plan"
     print("De-anonymizing plan")
     pprint("--------------------")
     deanonimzed_plan = de_anonymize_plan_chain.invoke({"plan": state["plan"], "mapping": state["mapping"]})
@@ -822,7 +822,7 @@ def plan_step(state: PlanExecute):
     Returns:
         The updated state with the plan.
     """
-    state["curr_state"] = "planning"
+    state["curr_state"] = "planner"
     print("Planning step")
     pprint("--------------------")
     plan = planner.invoke({"question": state['anonymized_question']})
@@ -856,7 +856,7 @@ def replan_step(state: PlanExecute):
     Returns:
         The updated state with the plan.
     """
-    state["curr_state"] = "replanning"
+    state["curr_state"] = "replan"
     print("Replanning step")
     pprint("--------------------")
     inputs = {"question": state["question"], "plan": state["plan"], "past_steps": state["past_steps"], "aggregated_context": state["aggregated_context"]}
@@ -873,7 +873,7 @@ def can_be_answered(state: PlanExecute):
     Returns:
         whether the original question can be answered or not.
     """
-    state["curr_state"] = "can_be_answered"
+    state["curr_state"] = "can_be_answered_already"
     print("Checking if the ORIGINAL QUESTION can be answered already")
     pprint("--------------------")
     question = state["question"]
@@ -1107,19 +1107,20 @@ import streamlit.components.v1 as components
 
 
 def create_network_graph(current_state):
-    net = Network(directed=True, notebook=True)
+    net = Network(directed=True, notebook=True, height="250px", width="100%")
+    net.toggle_physics(False)  # Disable physics simulation
     
     nodes = [
-        {"id": "anonymize_question", "label": "anonymize_question"},
-        {"id": "planner", "label": "planner"},
-        {"id": "de_anonymize_plan", "label": "de_anonymize_plan"},
-        {"id": "break_down_plan", "label": "break_down_plan"},
-        {"id": "task_handler", "label": "task_handler"},
-        {"id": "retrieve", "label": "retrieve"},
-        {"id": "answer", "label": "answer"},
-        {"id": "replan", "label": "replan"},
-        {"id": "can_be_answered_already", "label": "can_be_answered_already"},
-        {"id": "get_final_answer", "label": "get_final_answer"}
+        {"id": "anonymize_question", "label": "anonymize_question", "x": 0, "y": 0},
+        {"id": "planner", "label": "planner", "x": 100 * 1.75, "y": -100},
+        {"id": "de_anonymize_plan", "label": "de_anonymize_plan", "x": 200* 1.75, "y": -100},
+        {"id": "break_down_plan", "label": "break_down_plan", "x": 300* 1.75, "y": -100},
+        {"id": "task_handler", "label": "task_handler", "x": 400* 1.75, "y": 0},
+        {"id": "retrieve", "label": "retrieve", "x": 500* 1.75, "y": -100},
+        {"id": "answer", "label": "answer", "x": 500* 1.75, "y": 100},
+        {"id": "replan", "label": "replan", "x": 600* 1.75, "y": 0},
+        {"id": "can_be_answered_already", "label": "can_be_answered_already", "x": 700* 1.75, "y": 0},
+        {"id": "get_final_answer", "label": "get_final_answer", "x": 800* 1.75, "y": 0}
     ]
     
     edges = [
@@ -1132,24 +1133,29 @@ def create_network_graph(current_state):
         ("retrieve", "replan"),
         ("answer", "replan"),
         ("replan", "can_be_answered_already"),
+        ("replan", "break_down_plan"),
         ("can_be_answered_already", "get_final_answer")
     ]
     
+    # Add nodes with conditional coloring
     for node in nodes:
-        color = "green" if node["id"] == current_state else "pink"
-        net.add_node(node["id"], label=node["label"], color=color)
+        color = "#00FF00" if node["id"] == current_state else "#FF69B4"  # Green if current, else pink
+        net.add_node(node["id"], label=node["label"], x=node["x"], y=node["y"], color=color, physics=False, font={'size': 16})
     
+    # Add edges with a default color
     for edge in edges:
-        net.add_edge(*edge)
+        net.add_edge(edge[0], edge[1], color="#808080")  # Set edge color to gray
+    
+    # Customize other visual aspects
+    net.options.edges.smooth.type = "straight"  # Make edges straight lines
+    net.options.edges.width = 1.5  # Set edge width
     
     return net
 
+def compute_initial_positions(net):
+    net.barnes_hut()
+    return {node['id']: (node['x'], node['y']) for node in net.nodes}
 
-import base64
-
-def serve_graph_html(html_content):
-    b64 = base64.b64encode(html_content.encode()).decode()
-    return f"data:text/html;base64,{b64}"
 
 def save_and_display_graph(net):
     with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".html") as tmp_file:
@@ -1163,40 +1169,58 @@ def execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, gra
     agent_state_value = None
     progress_bar = st.progress(0)
     step = 0
+    previous_state = None
+    previous_values = {key: None for key in placeholders}
 
-    try:    
+    try:
         for plan_output in plan_and_execute_app.stream(inputs, config=config):
             step += 1
-            for _, agent_state_value in plan_output.items():
-                # Update placeholders
-                for key, placeholder in placeholders.items():
-                    if key in agent_state_value and key != "curr_state":
-                        if key in ["plan", "past_steps"] and isinstance(agent_state_value[key], list):
-                            formatted_value = "\n".join([f"{i+1}. {item}" for i, item in enumerate(agent_state_value[key])])
-                        else:
-                            formatted_value = agent_state_value[key]
-                        placeholder.markdown(f"{formatted_value}")
-                
-                current_state = agent_state_value["curr_state"]
-                net = create_network_graph(current_state)
-                graph_html = save_and_display_graph(net)
-                
-                # Update the graph
-                graph_placeholder.empty()
-                with graph_placeholder.container():
-                    components.html(graph_html, height=600, scrolling=True)
+            for output_key, agent_state_value in plan_output.items():
+                current_state = agent_state_value.get("curr_state")
 
+                # Update graph
+                if current_state:
+                    net = create_network_graph(current_state)
+                    graph_html = save_and_display_graph(net)
+                    graph_placeholder.empty()
+                    with graph_placeholder.container():
+                        components.html(graph_html, height=350, scrolling=True)
+
+                # Update placeholders only if the state has changed (i.e., we've finished visiting the previous node)
+                if current_state != previous_state and previous_state is not None:
+                    for key, placeholder in placeholders.items():
+                        if key in previous_values and previous_values[key] is not None:
+                            if isinstance(previous_values[key], list):
+                                formatted_value = "\n".join([f"{i+1}. {item}" for i, item in enumerate(previous_values[key])])
+                            else:
+                                formatted_value = previous_values[key]
+                            placeholder.markdown(f"{formatted_value}")
+
+                # Store current values for the next iteration
+                for key in placeholders:
+                    if key in agent_state_value:
+                        previous_values[key] = agent_state_value[key]
+
+                previous_state = current_state
                 progress_bar.progress(step / recursion_limit)
                 if step >= recursion_limit:
                     break
-        response = agent_state_value['response'] if agent_state_value else "No response found."
+
+        # After the loop, update placeholders with the final state
+        for key, placeholder in placeholders.items():
+            if key in previous_values and previous_values[key] is not None:
+                if isinstance(previous_values[key], list):
+                    formatted_value = "\n".join([f"{i+1}. {item}" for i, item in enumerate(previous_values[key])])
+                else:
+                    formatted_value = previous_values[key]
+                placeholder.markdown(f"{formatted_value}")
+
+        response = agent_state_value.get('response', "No response found.") if agent_state_value else "No response found."
     except Exception as e:
         response = f"An error occurred: {str(e)}"
-    final_state = agent_state_value
+        st.error(f"Error: {e}")
 
-    st.write(f'The final answer is: {response}')
     return response
-
 
 def main():
     st.set_page_config(layout="wide")  # Use wide layout
@@ -1207,32 +1231,31 @@ def main():
     plan_and_execute_app = create_agent()
 
     # Get the user's question
-    question = st.text_input("Enter your question:", "what did professor lupin teach?")
+    question = st.text_input("Enter your question:", "how did harry beat quirrell?")
 
     if st.button("Run Agent"):
         inputs = {"question": question}
         
-        # Create columns for the keys of interest
-        col1, col2, col3, col4 = st.columns([1, 2, 2, 4])
+        # Create a row for the graph
+        st.markdown("**Graph**")
+        graph_placeholder = st.empty()
+
+        # Create three columns for the other variables
+        col1, col2, col3 = st.columns([1, 1, 2])
         
         with col1:
-            st.markdown("**Graph**")
+            st.markdown("**Plan**")
         with col2:
-            st.markdown("**plan**")
+            st.markdown("**Past Steps**")
         with col3:
-            st.markdown("**past_steps**")
-        with col4:
-            st.markdown("**aggregated_context**")
+            st.markdown("**Aggregated Context**")
 
         # Initialize placeholders for each column
         placeholders = {
-            "plan": col2.empty(),
-            "past_steps": col3.empty(),
-            "aggregated_context": col4.empty(),
+            "plan": col1.empty(),
+            "past_steps": col2.empty(),
+            "aggregated_context": col3.empty(),
         }
-        
-        # Placeholder for the graph (use col1 for graph)
-        graph_placeholder = col1.empty()
 
         response = execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, graph_placeholder)
         st.write("Final Answer:")
