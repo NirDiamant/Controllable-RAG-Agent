@@ -6,7 +6,6 @@ To achieve this, the algorithm was tested using a familiar use case: the first b
 
 An indicator of the algorithm’s reliability is its ability to fail at answering questions not found in the context. When it successfully answers a question derived from the context, it confirms that the solution is based on the actual data provided. If it fails, it is because the answer could not be deduced from the available data.
 
-
 ### Example of Such Questions:
 #### How did the protagonist defeat the villain's assistant?
 To solve this question, the following steps are necessary:
