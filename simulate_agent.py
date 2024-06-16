@@ -20,16 +20,17 @@ def create_network_graph(current_state):
     
     nodes = [
         {"id": "anonymize_question", "label": "anonymize_question", "x": 0, "y": 0},
-        {"id": "planner", "label": "planner", "x": 100 * 1.75, "y": -100},
-        {"id": "de_anonymize_plan", "label": "de_anonymize_plan", "x": 200 * 1.75, "y": -100},
-        {"id": "break_down_plan", "label": "break_down_plan", "x": 300 * 1.75, "y": -100},
-        {"id": "task_handler", "label": "task_handler", "x": 400 * 1.75, "y": 0},
-        {"id": "retrieve", "label": "retrieve", "x": 500 * 1.75, "y": -100},
-        {"id": "answer", "label": "answer", "x": 500 * 1.75, "y": 100},
-        {"id": "replan", "label": "replan", "x": 600 * 1.75, "y": 0},
-        {"id": "can_be_answered_already", "label": "can_be_answered_already", "x": 700 * 1.75, "y": 0},
-        {"id": "get_final_answer", "label": "get_final_answer", "x": 800 * 1.75, "y": 0}
+        {"id": "planner", "label": "planner", "x": 175, "y": -100},
+        {"id": "de_anonymize_plan", "label": "de_anonymize_plan", "x": 350, "y": -100},
+        {"id": "break_down_plan", "label": "break_down_plan", "x": 525, "y": -100},
+        {"id": "task_handler", "label": "task_handler", "x": 700, "y": 0},
+        {"id": "retrieve", "label": "retrieve", "x": 875, "y": -100},
+        {"id": "answer", "label": "answer", "x": 875, "y": 100},
+        {"id": "replan", "label": "replan", "x": 1050, "y": 0},
+        {"id": "can_be_answered_already", "label": "can_be_answered_already", "x": 1225, "y": 0},
+        {"id": "get_final_answer", "label": "get_final_answer", "x": 1400, "y": 0}
     ]
+
     
     edges = [
         ("anonymize_question", "planner"),
@@ -60,6 +61,7 @@ def create_network_graph(current_state):
     
     return net
 
+
 def compute_initial_positions(net):
     """
     Compute the initial positions of the nodes in the network graph.
@@ -72,6 +74,7 @@ def compute_initial_positions(net):
     """
     net.barnes_hut()
     return {node['id']: (node['x'], node['y']) for node in net.nodes}
+
 
 def save_and_display_graph(net):
     """
@@ -88,6 +91,49 @@ def save_and_display_graph(net):
         tmp_file.flush()
         with open(tmp_file.name, "r", encoding="utf-8") as f:
             return f.read()
+
+
+def update_placeholders_and_graph(agent_state_value, placeholders, graph_placeholder, previous_values, previous_state):
+    """
+    Update the placeholders and graph in the Streamlit app based on the current state.
+
+    Args:
+        agent_state_value (dict): The current state value of the agent.
+        placeholders (dict): The placeholders to display the steps.
+        graph_placeholder (Streamlit.placeholder): The placeholder to display the network graph.
+        previous_values (dict): The previous values of the placeholders.
+        previous_state: The previous state of the agent.
+
+    Returns:
+        tuple: Updated previous_values and previous_state.
+    """
+    current_state = agent_state_value.get("curr_state")
+
+    # Update graph
+    if current_state:
+        net = create_network_graph(current_state)
+        graph_html = save_and_display_graph(net)
+        graph_placeholder.empty()
+        with graph_placeholder.container():
+            components.html(graph_html, height=350, scrolling=True)
+
+    # Update placeholders only if the state has changed (i.e., we've finished visiting the previous node)
+    if current_state != previous_state and previous_state is not None:
+        for key, placeholder in placeholders.items():
+            if key in previous_values and previous_values[key] is not None:
+                if isinstance(previous_values[key], list):
+                    formatted_value = "\n".join([f"{i+1}. {item}" for i, item in enumerate(previous_values[key])])
+                else:
+                    formatted_value = previous_values[key]
+                placeholder.markdown(f"{formatted_value}")
+
+    # Store current values for the next iteration
+    for key in placeholders:
+        if key in agent_state_value:
+            previous_values[key] = agent_state_value[key]
+
+    return previous_values, current_state
+
 
 def execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, graph_placeholder, recursion_limit=15):
     """
@@ -114,32 +160,10 @@ def execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, gra
         for plan_output in plan_and_execute_app.stream(inputs, config=config):
             step += 1
             for _, agent_state_value in plan_output.items():
-                current_state = agent_state_value.get("curr_state")
+                previous_values, previous_state = update_placeholders_and_graph(
+                    agent_state_value, placeholders, graph_placeholder, previous_values, previous_state
+                )
 
-                # Update graph
-                if current_state:
-                    net = create_network_graph(current_state)
-                    graph_html = save_and_display_graph(net)
-                    graph_placeholder.empty()
-                    with graph_placeholder.container():
-                        components.html(graph_html, height=350, scrolling=True)
-
-                # Update placeholders only if the state has changed (i.e., we've finished visiting the previous node)
-                if current_state != previous_state and previous_state is not None:
-                    for key, placeholder in placeholders.items():
-                        if key in previous_values and previous_values[key] is not None:
-                            if isinstance(previous_values[key], list):
-                                formatted_value = "\n".join([f"{i+1}. {item}" for i, item in enumerate(previous_values[key])])
-                            else:
-                                formatted_value = previous_values[key]
-                            placeholder.markdown(f"{formatted_value}")
-
-                # Store current values for the next iteration
-                for key in placeholders:
-                    if key in agent_state_value:
-                        previous_values[key] = agent_state_value[key]
-
-                previous_state = current_state
                 progress_bar.progress(step / recursion_limit)
                 if step >= recursion_limit:
                     break
@@ -160,12 +184,13 @@ def execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, gra
 
     return response
 
+
 def main():
     """
     Main function to run the Streamlit app.
     """
     st.set_page_config(layout="wide")  # Use wide layout
-
+    
     st.title("Real-Time Agent Execution Visualization")
     
     # Load your existing agent creation function
@@ -201,6 +226,7 @@ def main():
         response = execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, graph_placeholder, recursion_limit=30)
         st.write("Final Answer:")
         st.write(response)
+
 
 if __name__ == "__main__":
     main()
