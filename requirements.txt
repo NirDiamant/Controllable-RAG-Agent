@@ -12,3 +12,4 @@ pyPDF2
 faiss-cpu
 langgraph
 langchainhub
+streamlit 
