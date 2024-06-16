@@ -5,6 +5,8 @@ import PyPDF2
 import pylcs
 import pandas as pd
 import textwrap
+import pickle
+
 
 
 def num_tokens_from_string(string: str, encoding_name: str) -> int:
@@ -189,3 +191,39 @@ def analyse_metric_results(results_df):
             print("Measures whether the generated answer is factually correct.")
             print(f"Score: {metric_value:.4f}")
             # Interpretation: Higher score indicates better correctness.
+
+
+
+import dill
+
+def save_object(obj, filename):
+    """
+    Save a Python object to a file using dill.
+    
+    Args:
+    - obj: The Python object to save.
+    - filename: The name of the file where the object will be saved.
+    """
+    with open(filename, 'wb') as file:
+        dill.dump(obj, file)
+    print(f"Object has been saved to '{filename}'.")
+
+def load_object(filename):
+    """
+    Load a Python object from a file using dill.
+    
+    Args:
+    - filename: The name of the file from which the object will be loaded.
+    
+    Returns:
+    - The loaded Python object.
+    """
+    with open(filename, 'rb') as file:
+        obj = dill.load(file)
+    print(f"Object has been loaded from '{filename}'.")
+    return obj
+
+# Example usage:
+# save_object(plan_and_execute_app, 'plan_and_execute_app.pkl')
+# plan_and_execute_app = load_object('plan_and_execute_app.pkl')
+
