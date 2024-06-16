@@ -6,7 +6,6 @@ To achieve this, the algorithm was tested using a familiar use case: the first b
 
 An indicator of the algorithm’s reliability is its ability to fail at answering questions not found in the context. When it successfully answers a question derived from the context, it confirms that the solution is based on the actual data provided. If it fails, it is because the answer could not be deduced from the available data.
 
-
 ### Example of Such Questions:
 #### How did the protagonist defeat the villain's assistant?
 To solve this question, the following steps are necessary:
@@ -29,7 +28,7 @@ To solve this question, the following steps are necessary:
 
 ## Suggested Deterministic Agent Solution Schema:
 
-![Solution Schema](graphs\final_graph_schema.jpeg)
+![Solution Schema](graphs/final_graph_schema.jpeg)
 
 
 ## Algorithm Represented by the Graph:
@@ -54,7 +53,7 @@ To solve this question, the following steps are necessary:
 8. Verify that the final answer is grounded in the context. If not, generate the final answer again.<br>
 9. Output the final answer to the user.<br>
 
-![Demo](graphs\demo_gif.gif)
+![Demo](graphs/demo_gif.gif)
 
 ## Heuristics and Techniques Implemented in This Solution:
 
@@ -87,9 +86,9 @@ To solve this question, the following steps are necessary:
     GROQ_API_KEY=your_groq_api_key
     ```
 
-4. **Step-by-Step Tutorial Notebook:** The step-by-step tutorial notebook is `sophisticated_rag_agent_harry_potter.ipynb`.
+4. Step-by-Step Tutorial Notebook: The step-by-step tutorial notebook is `sophisticated_rag_agent_harry_potter.ipynb`.
 
-5. **Run a Real-Time Visualization of the Agent:**
+5. Run a Real-Time Visualization of the Agent:
     - Open CMD and type: `streamlit run simulate_agent.py`
 
 
