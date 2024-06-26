@@ -53,7 +53,7 @@ To solve this question, the following steps are necessary:
 8. Verify that the final answer is grounded in the context. If not, generate the final answer again.<br>
 9. Output the final answer to the user.<br>
 
-![Demo](graphs/demo_gif.gif)
+![Demo](graphs/demo.gif)
 
 ## Heuristics and Techniques Implemented in This Solution ⚙️
 
