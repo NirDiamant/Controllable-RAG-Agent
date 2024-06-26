@@ -35,13 +35,16 @@ def create_retrievers():
     embeddings = OpenAIEmbeddings()
     chunks_vector_store =  FAISS.load_local("chunks_vector_store", embeddings, allow_dangerous_deserialization=True)
     chapter_summaries_vector_store =  FAISS.load_local("chapter_summaries_vector_store", embeddings, allow_dangerous_deserialization=True)
+    book_quotes_vectorstore =  FAISS.load_local("book_quotes_vectorstore", embeddings, allow_dangerous_deserialization=True)
+
 
 
     chunks_query_retriever = chunks_vector_store.as_retriever(search_kwargs={"k": 1})     
     chapter_summaries_query_retriever = chapter_summaries_vector_store.as_retriever(search_kwargs={"k": 1})
-    return chunks_query_retriever, chapter_summaries_query_retriever
+    book_quotes_query_retriever = book_quotes_vectorstore.as_retriever(search_kwargs={"k": 10})
+    return chunks_query_retriever, chapter_summaries_query_retriever, book_quotes_query_retriever
 
-chunks_query_retriever, chapter_summaries_query_retriever = create_retrievers()
+chunks_query_retriever, chapter_summaries_query_retriever, book_quotes_query_retriever = create_retrievers()
 
 def retrieve_context_per_question(state):
     """
@@ -68,8 +71,12 @@ def retrieve_context_per_question(state):
         f"{doc.page_content} (Chapter {doc.metadata['chapter']})" for doc in docs_summaries
     )
 
+    print("Retrieving relevant book quotes...")
+    docs_book_quotes = book_quotes_query_retriever.get_relevant_documents(state["question"])
+    book_qoutes = " ".join(doc.page_content for doc in docs_book_quotes)
 
-    all_contexts = context + context_summaries
+
+    all_contexts = context + context_summaries + book_qoutes
     all_contexts = escape_quotes(all_contexts)
 
     return {"context": all_contexts, "question": question}
@@ -242,6 +249,7 @@ def create_is_relevant_content_chain():
     return is_relevant_content_chain
 
 is_relevant_content_chain = create_is_relevant_content_chain()
+
 def is_relevant_content(state):
     """
     Determines if the document is relevant to the query.
@@ -372,29 +380,98 @@ def is_distilled_content_grounded_on_content(state):
     else:
         print("The distilled content is not grounded on the original context.")
         return "not grounded on the original context"
+    
+
+def retrieve_chunks_context_per_question(state):
+    """
+    Retrieves relevant context for a given question. The context is retrieved from the book chunks and chapter summaries.
+
+    Args:
+        state: A dictionary containing the question to answer.
+    """
+    # Retrieve relevant documents
+    print("Retrieving relevant chunks...")
+    question = state["question"]
+    docs = chunks_query_retriever.get_relevant_documents(question)
+
+    # Concatenate document content
+    context = " ".join(doc.page_content for doc in docs)
+    context = escape_quotes(context)
+    return {"context": context, "question": question}
+
+def retrieve_summaries_context_per_question(state):
+
+    print("Retrieving relevant chapter summaries...")
+    question = state["question"]
+
+    docs_summaries = chapter_summaries_query_retriever.get_relevant_documents(state["question"])
+
+    # Concatenate chapter summaries with citation information
+    context_summaries = " ".join(
+        f"{doc.page_content} (Chapter {doc.metadata['chapter']})" for doc in docs_summaries
+    )
+    context_summaries = escape_quotes(context_summaries)
+    return {"context": context_summaries, "question": question}
+
+def retrieve_book_quotes_context_per_question(state):
+    question = state["question"]
+
+    print("Retrieving relevant book quotes...")
+    docs_book_quotes = book_quotes_query_retriever.get_relevant_documents(state["question"])
+    book_qoutes = " ".join(doc.page_content for doc in docs_book_quotes)
+    book_qoutes_context = escape_quotes(book_qoutes)
+
+    return {"context": book_qoutes_context, "question": question}
 
 
-def create_qualitative_retrieval_workflow_app():
-    class QualitativeRetrievalGraphState(TypedDict):
-        """
-        Represents the state of our graph.
-        """
 
-        question: str
-        context: str
-        relevant_context: str
+class QualitativeRetrievalGraphState(TypedDict):
+    """
+    Represents the state of our graph.
+    """
 
-    qualitative_retrieval_workflow = StateGraph(QualitativeRetrievalGraphState)
+    question: str
+    context: str
+    relevant_context: str
+
+
+def create_qualitative_retrieval_book_chunks_workflow_app():
+    qualitative_chunks_retrieval_workflow = StateGraph(QualitativeRetrievalGraphState)
 
     # Define the nodes
-    qualitative_retrieval_workflow.add_node("retrieve_context_per_question",retrieve_context_per_question)
-    qualitative_retrieval_workflow.add_node("keep_only_relevant_content",keep_only_relevant_content)
+    qualitative_chunks_retrieval_workflow.add_node("retrieve_chunks_context_per_question",retrieve_chunks_context_per_question)
+    qualitative_chunks_retrieval_workflow.add_node("keep_only_relevant_content",keep_only_relevant_content)
 
     # Build the graph
-    qualitative_retrieval_workflow.set_entry_point("retrieve_context_per_question")
-    qualitative_retrieval_workflow.add_edge("retrieve_context_per_question", "keep_only_relevant_content")
+    qualitative_chunks_retrieval_workflow.set_entry_point("retrieve_chunks_context_per_question")
 
-    qualitative_retrieval_workflow.add_conditional_edges(
+    qualitative_chunks_retrieval_workflow.add_edge("retrieve_chunks_context_per_question", "keep_only_relevant_content")
+
+    qualitative_chunks_retrieval_workflow.add_conditional_edges(
+        "keep_only_relevant_content",
+        is_distilled_content_grounded_on_content,
+        {"grounded on the original context":END,
+        "not grounded on the original context":"keep_only_relevant_content"},
+        )
+
+    
+    qualitative_chunks_retrieval_workflow_app = qualitative_chunks_retrieval_workflow.compile()
+    return qualitative_chunks_retrieval_workflow_app
+
+
+def create_qualitative_retrieval_chapter_summaries_workflow_app():
+    qualitative_summaries_retrieval_workflow = StateGraph(QualitativeRetrievalGraphState)
+
+    # Define the nodes
+    qualitative_summaries_retrieval_workflow.add_node("retrieve_summaries_context_per_question",retrieve_summaries_context_per_question)
+    qualitative_summaries_retrieval_workflow.add_node("keep_only_relevant_content",keep_only_relevant_content)
+
+    # Build the graph
+    qualitative_summaries_retrieval_workflow.set_entry_point("retrieve_summaries_context_per_question")
+
+    qualitative_summaries_retrieval_workflow.add_edge("retrieve_summaries_context_per_question", "keep_only_relevant_content")
+
+    qualitative_summaries_retrieval_workflow.add_conditional_edges(
         "keep_only_relevant_content",
         is_distilled_content_grounded_on_content,
         {"grounded on the original context":END,
@@ -402,8 +479,33 @@ def create_qualitative_retrieval_workflow_app():
         )
 
 
-    qualitative_retrieval_workflow_app = qualitative_retrieval_workflow.compile()
-    return qualitative_retrieval_workflow_app
+    qualitative_summaries_retrieval_workflow_app = qualitative_summaries_retrieval_workflow.compile()
+    return qualitative_summaries_retrieval_workflow_app
+
+
+def create_qualitative_book_quotes_retrieval_workflow_app():
+    qualitative_book_quotes_retrieval_workflow = StateGraph(QualitativeRetrievalGraphState)
+
+    # Define the nodes
+    qualitative_book_quotes_retrieval_workflow.add_node("retrieve_book_quotes_context_per_question",retrieve_book_quotes_context_per_question)
+    qualitative_book_quotes_retrieval_workflow.add_node("keep_only_relevant_content",keep_only_relevant_content)
+
+    # Build the graph
+    qualitative_book_quotes_retrieval_workflow.set_entry_point("retrieve_book_quotes_context_per_question")
+
+    qualitative_book_quotes_retrieval_workflow.add_edge("retrieve_book_quotes_context_per_question", "keep_only_relevant_content")
+
+    qualitative_book_quotes_retrieval_workflow.add_conditional_edges(
+        "keep_only_relevant_content",
+        is_distilled_content_grounded_on_content,
+        {"grounded on the original context":END,
+        "not grounded on the original context":"keep_only_relevant_content"},
+        )
+
+    qualitative_book_quotes_retrieval_workflow_app = qualitative_book_quotes_retrieval_workflow.compile()
+
+    return qualitative_book_quotes_retrieval_workflow_app
+
 
 
 is_grounded_on_facts_chain = create_is_grounded_on_facts_chain()
@@ -503,7 +605,11 @@ def create_break_down_plan_chain():
 
     break_down_plan_prompt_template = """You receive a plan {plan} which contains a series of steps to follow in order to answer a query. 
     you need to go through the plan refine it according to this:
-    1. every step has to be able to be executed by either retrieving relevant information from a vector store based on a given query, or answering a question from a given context.
+    1. every step has to be able to be executed by either:
+        i. retrieving relevant information from a vector store of book chunks
+        ii. retrieving relevant information from a vector store of chapter summaries
+        iii. retrieving relevant information from a vector store of book quotes
+        iv. answering a question from a given context.
     2. every step should contain all the information needed to execute it.
 
     output the refined plan
@@ -517,6 +623,7 @@ def create_break_down_plan_chain():
     break_down_plan_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
 
     break_down_plan_chain = break_down_plan_prompt | break_down_plan_llm.with_structured_output(Plan)
+
     return break_down_plan_chain
 
 def create_replanner_chain():
@@ -571,27 +678,35 @@ def create_replanner_chain():
 def create_task_handler_chain():
     tasks_handler_prompt_template = """You are a task handler that receives a task {curr_task} and have to decide with tool to use to execute the task.
     You have the following tools at your disposal:
-    Tool A: a tool that retrieves relevant information from a vector store based on a given query.
-    use Tool A when you think the current task should be executed by retrieving relevant information from a vector store.
-    Tool B: a tool that answers a question from a given context.
-    use Tool B ONLY when you the current task can be answered by the aggregated context {aggregated_context}
+    Tool A: a tool that retrieves relevant information from a vector store of book chunks based on a given query.
+    - use Tool A when you think the current task should search for information in the book chunks.
+    Took B: a tool that retrieves relevant information from a vector store of chapter summaries based on a given query.
+    - use Tool B when you think the current task should search for information in the chapter summaries.
+    Tool C: a tool that retrieves relevant information from a vector store of quotes from the book based on a given query.
+    - use Tool C when you think the current task should search for information in the book quotes.
+    Tool D: a tool that answers a question from a given context.
+    - use Tool D ONLY when you the current task can be answered by the aggregated context {aggregated_context}
+
+    you also receive the last tool used {last_tool}
+    if {last_tool} was retrieve_chunks, use other tools than Tool A.
 
     You also have the past steps {past_steps} that you can use to make decisions and understand the context of the task.
     You also have the initial user's question {question} that you can use to make decisions and understand the context of the task.
-    if you decide to use Tool A, output the query to be used for the tool and also that the tool to be used is Tool A.
-    if you decide to use Tool B, output the question to be used for the tool, the context, and also that the tool to be used is Tool B.
+    if you decide to use Tools A,B or C, output the query to be used for the tool and also output the relevant tool.
+    if you decide to use Tool D, output the question to be used for the tool, the context, and also that the tool to be used is Tool D.
+
     """
 
     class TaskHandlerOutput(BaseModel):
         """Output schema for the task handler."""
         query: str = Field(description="The query to be either retrieved from the vector store, or the question that should be answered from context.")
         curr_context: str = Field(description="The context to be based on in order to answer the query.")
-        tool: str = Field(description="The tool to be used should be either 'retrieve' or 'answer_from_context'.")
+        tool: str = Field(description="The tool to be used should be either retrieve_chunks, retrieve_summaries, retrieve_quotes, or answer_from_context.")
 
 
     task_handler_prompt = PromptTemplate(
         template=tasks_handler_prompt_template,
-        input_variables=["curr_task", "aggregated_context", "past_steps", "question"],
+        input_variables=["curr_task", "aggregated_context", "last_tool" "past_steps", "question"],
     )
 
     task_handler_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
@@ -675,7 +790,9 @@ def create_can_be_answered_already_chain():
 
 
 task_handler_chain = create_task_handler_chain()
-qualitative_retrieval_workflow_app = create_qualitative_retrieval_workflow_app()
+qualitative_chunks_retrieval_workflow_app = create_qualitative_retrieval_book_chunks_workflow_app()
+qualitative_summaries_retrieval_workflow_app = create_qualitative_retrieval_chapter_summaries_workflow_app()
+qualitative_book_quotes_retrieval_workflow_app = create_qualitative_book_quotes_retrieval_workflow_app()
 qualitative_answer_workflow_app = create_qualitative_answer_workflow_app()
 de_anonymize_plan_chain = create_deanonymize_plan_chain()
 planner = create_plan_chain()
@@ -704,6 +821,7 @@ def run_task_handler_chain(state: PlanExecute):
 
     inputs = {"curr_task": curr_task,
                "aggregated_context": state["aggregated_context"],
+                "last_tool": state["tool"],
                 "past_steps": state["past_steps"],
                 "question": state["question"]}
     
@@ -712,9 +830,19 @@ def run_task_handler_chain(state: PlanExecute):
     state["past_steps"].append(curr_task)
     state["plan"].pop(0)
 
-    if output.tool == "retrieve":
+    if output.tool == "retrieve_chunks":
         state["query_to_retrieve_or_answer"] = output.query
-        state["tool"]="retrieve"
+        state["tool"]="retrieve_chunks"
+    
+    elif output.tool == "retrieve_summaries":
+        state["query_to_retrieve_or_answer"] = output.query
+        state["tool"]="retrieve_summaries"
+
+    elif output.tool == "retrieve_quotes":
+        state["query_to_retrieve_or_answer"] = output.query
+        state["tool"]="retrieve_quotes"
+
+    
     elif output.tool == "answer_from_context":
         state["query_to_retrieve_or_answer"] = output.query
         state["curr_context"] = output.curr_context
@@ -734,35 +862,82 @@ def retrieve_or_answer(state: PlanExecute):
     """
     state["curr_state"] = "decide_tool"
     print("deciding whether to retrieve or answer")
-    if state["tool"] == "retrieve":
-        return "retrieve_from_vector_store"
+    if state["tool"] == "retrieve_chunks":
+        return "chosen_tool_is_retrieve_chunks"
+    elif state["tool"] == "retrieve_summaries":
+        return "chosen_tool_is_retrieve_summaries"
+    elif state["tool"] == "retrieve_quotes":
+        return "chosen_tool_is_retrieve_quotes"
     elif state["tool"] == "answer":
-        return "answer_from_context"
+        return "chosen_tool_is_answer"
     else:
         raise ValueError("Invalid tool was outputed. Must be either 'retrieve' or 'answer_from_context'")  
 
 
-def run_qualitative_retrieval_workflow(state):
+
+def run_qualitative_chunks_retrieval_workflow(state):
     """
-    Run the qualitative retrieval workflow.
+    Run the qualitative chunks retrieval workflow.
     Args:
         state: The current state of the plan execution.
     Returns:
         The state with the updated aggregated context.
     """
-    state["curr_state"] = "retrieve"
-    print("Running the qualitative retrieval workflow...")
+    state["curr_state"] = "retrieve_chunks"
+    print("Running the qualitative chunks retrieval workflow...")
     question = state["query_to_retrieve_or_answer"]
     inputs = {"question": question}
-    for output in qualitative_retrieval_workflow_app.stream(inputs):
+    for output in qualitative_chunks_retrieval_workflow_app.stream(inputs):
         for _, _ in output.items():
             pass 
         pprint("--------------------")
-    
     if not state["aggregated_context"]:
         state["aggregated_context"] = ""
     state["aggregated_context"] += output['relevant_context']
     return state
+
+def run_qualitative_summaries_retrieval_workflow(state):
+    """
+    Run the qualitative summaries retrieval workflow.
+    Args:
+        state: The current state of the plan execution.
+    Returns:
+        The state with the updated aggregated context.
+    """
+    state["curr_state"] = "retrieve_summaries"
+    print("Running the qualitative summaries retrieval workflow...")
+    question = state["query_to_retrieve_or_answer"]
+    inputs = {"question": question}
+    for output in qualitative_summaries_retrieval_workflow_app.stream(inputs):
+        for _, _ in output.items():
+            pass 
+        pprint("--------------------")
+    if not state["aggregated_context"]:
+        state["aggregated_context"] = ""
+    state["aggregated_context"] += output['relevant_context']
+    return state
+
+def run_qualitative_book_quotes_retrieval_workflow(state):
+    """
+    Run the qualitative book quotes retrieval workflow.
+    Args:
+        state: The current state of the plan execution.
+    Returns:
+        The state with the updated aggregated context.
+    """
+    state["curr_state"] = "retrieve_book_quotes"
+    print("Running the qualitative book quotes retrieval workflow...")
+    question = state["query_to_retrieve_or_answer"]
+    inputs = {"question": question}
+    for output in qualitative_book_quotes_retrieval_workflow_app.stream(inputs):
+        for _, _ in output.items():
+            pass 
+        pprint("--------------------")
+    if not state["aggregated_context"]:
+        state["aggregated_context"] = ""
+    state["aggregated_context"] += output['relevant_context']
+    return state
+   
 
 
 def run_qualtative_answer_workflow(state):
@@ -927,6 +1102,7 @@ def can_be_answered(state: PlanExecute):
 
 
 def create_agent():
+    
     agent_workflow = StateGraph(PlanExecute)
 
     # Add the anonymize node
@@ -942,8 +1118,15 @@ def create_agent():
     # Add the deanonymize node
     agent_workflow.add_node("de_anonymize_plan", deanonymize_queries)
 
-    # Add the qualitative retrieval node
-    agent_workflow.add_node("retrieve", run_qualitative_retrieval_workflow)
+    # Add the qualitative chunks retrieval node
+    agent_workflow.add_node("retrieve_chunks", run_qualitative_chunks_retrieval_workflow)
+
+    # Add the qualitative summaries retrieval node
+    agent_workflow.add_node("retrieve_summaries", run_qualitative_summaries_retrieval_workflow)
+
+    # Add the qualitative book quotes retrieval node
+    agent_workflow.add_node("retrieve_book_quotes", run_qualitative_book_quotes_retrieval_workflow)
+
 
     # Add the qualitative answer node
     agent_workflow.add_node("answer", run_qualtative_answer_workflow)
@@ -956,8 +1139,6 @@ def create_agent():
 
     # Add answer from context node
     agent_workflow.add_node("get_final_answer", run_qualtative_answer_workflow_for_final_answer)
-
-
 
     # Set the entry point
     agent_workflow.set_entry_point("anonymize_question")
@@ -976,10 +1157,15 @@ def create_agent():
     agent_workflow.add_edge("break_down_plan", "task_handler")
 
     # From task handler we go to either retrieve or answer
-    agent_workflow.add_conditional_edges("task_handler", retrieve_or_answer, {"retrieve_from_vector_store": "retrieve", "answer_from_context": "answer"})
+    agent_workflow.add_conditional_edges("task_handler", retrieve_or_answer, {"chosen_tool_is_retrieve_chunks": "retrieve_chunks", "chosen_tool_is_retrieve_summaries":
+                                                                            "retrieve_summaries", "chosen_tool_is_retrieve_quotes": "retrieve_book_quotes", "chosen_tool_is_answer": "answer"})
 
     # After retrieving we go to replan
-    agent_workflow.add_edge("retrieve", "replan")
+    agent_workflow.add_edge("retrieve_chunks", "replan")
+
+    agent_workflow.add_edge("retrieve_summaries", "replan")
+
+    agent_workflow.add_edge("retrieve_book_quotes", "replan")
 
     # After answering we go to replan
     agent_workflow.add_edge("answer", "replan")

@@ -20,15 +20,17 @@ def create_network_graph(current_state):
     
     nodes = [
         {"id": "anonymize_question", "label": "anonymize_question", "x": 0, "y": 0},
-        {"id": "planner", "label": "planner", "x": 175, "y": -100},
-        {"id": "de_anonymize_plan", "label": "de_anonymize_plan", "x": 350, "y": -100},
-        {"id": "break_down_plan", "label": "break_down_plan", "x": 525, "y": -100},
-        {"id": "task_handler", "label": "task_handler", "x": 700, "y": 0},
-        {"id": "retrieve", "label": "retrieve", "x": 875, "y": -100},
-        {"id": "answer", "label": "answer", "x": 875, "y": 100},
-        {"id": "replan", "label": "replan", "x": 1050, "y": 0},
-        {"id": "can_be_answered_already", "label": "can_be_answered_already", "x": 1225, "y": 0},
-        {"id": "get_final_answer", "label": "get_final_answer", "x": 1400, "y": 0}
+        {"id": "planner", "label": "planner", "x": 175*1.75, "y": -100},
+        {"id": "de_anonymize_plan", "label": "de_anonymize_plan", "x": 350*1.75, "y": -100},
+        {"id": "break_down_plan", "label": "break_down_plan", "x": 525*1.75, "y": -100},
+        {"id": "task_handler", "label": "task_handler", "x": 700*1.75, "y": 0},
+        {"id": "retrieve_chunks", "label": "retrieve_chunks", "x": 875*1.75, "y": +200},
+        {"id": "retrieve_summaries", "label": "retrieve_summaries", "x": 875*1.75, "y": +100},
+        {"id": "retrieve_book_quotes", "label": "retrieve_book_quotes", "x": 875*1.75, "y": 0},
+        {"id": "answer", "label": "answer", "x": 875*1.75, "y": -100},
+        {"id": "replan", "label": "replan", "x": 1050*1.75, "y": 0},
+        {"id": "can_be_answered_already", "label": "can_be_answered_already", "x": 1225*1.75, "y": 0},
+        {"id": "get_final_answer", "label": "get_final_answer", "x": 1400*1.75, "y": 0}
     ]
 
     
@@ -37,9 +39,13 @@ def create_network_graph(current_state):
         ("planner", "de_anonymize_plan"),
         ("de_anonymize_plan", "break_down_plan"),
         ("break_down_plan", "task_handler"),
-        ("task_handler", "retrieve"),
+        ("task_handler", "retrieve_chunks"),
+        ("task_handler", "retrieve_summaries"),
+        ("task_handler", "retrieve_book_quotes"),
         ("task_handler", "answer"),
-        ("retrieve", "replan"),
+        ("retrieve_chunks", "replan"),
+        ("retrieve_summaries", "replan"),
+        ("retrieve_book_quotes", "replan"),
         ("answer", "replan"),
         ("replan", "can_be_answered_already"),
         ("replan", "break_down_plan"),
@@ -49,7 +55,7 @@ def create_network_graph(current_state):
     # Add nodes with conditional coloring
     for node in nodes:
         color = "#00FF00" if node["id"] == current_state else "#FF69B4"  # Green if current, else pink
-        net.add_node(node["id"], label=node["label"], x=node["x"], y=node["y"], color=color, physics=False, font={'size': 16})
+        net.add_node(node["id"], label=node["label"], x=node["x"], y=node["y"], color=color, physics=False, font={'size': 22})
     
     # Add edges with a default color
     for edge in edges:
@@ -115,7 +121,7 @@ def update_placeholders_and_graph(agent_state_value, placeholders, graph_placeho
         graph_html = save_and_display_graph(net)
         graph_placeholder.empty()
         with graph_placeholder.container():
-            components.html(graph_html, height=350, scrolling=True)
+            components.html(graph_html, height=400, scrolling=True)
 
     # Update placeholders only if the state has changed (i.e., we've finished visiting the previous node)
     if current_state != previous_state and previous_state is not None:
@@ -135,7 +141,7 @@ def update_placeholders_and_graph(agent_state_value, placeholders, graph_placeho
     return previous_values, current_state
 
 
-def execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, graph_placeholder, recursion_limit=15):
+def execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, graph_placeholder, recursion_limit=25):
     """
     Execute the plan and print the steps in the Streamlit app.
 
@@ -197,7 +203,7 @@ def main():
     plan_and_execute_app = create_agent()
 
     # Get the user's question
-    question = st.text_input("Enter your question:", "What is the class that the professor who helped the villain is teaching?")
+    question = st.text_input("Enter your question:", "what is the class that the proffessor who helped the villain is teaching?")
 
     if st.button("Run Agent"):
         inputs = {"question": question}
@@ -223,7 +229,7 @@ def main():
             "aggregated_context": col3.empty(),
         }
 
-        response = execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, graph_placeholder, recursion_limit=30)
+        response = execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, graph_placeholder, recursion_limit=35)
         st.write("Final Answer:")
         st.write(response)
 
