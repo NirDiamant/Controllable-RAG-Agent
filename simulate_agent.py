@@ -229,7 +229,7 @@ def main():
             "aggregated_context": col3.empty(),
         }
 
-        response = execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, graph_placeholder, recursion_limit=35)
+        response = execute_plan_and_print_steps(inputs, plan_and_execute_app, placeholders, graph_placeholder, recursion_limit=45)
         st.write("Final Answer:")
         st.write(response)
 

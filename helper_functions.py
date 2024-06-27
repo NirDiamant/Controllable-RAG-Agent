@@ -5,7 +5,7 @@ import PyPDF2
 import pylcs
 import pandas as pd
 import textwrap
-import pickle
+
 
 
 

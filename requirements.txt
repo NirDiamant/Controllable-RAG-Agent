@@ -13,3 +13,4 @@ faiss-cpu
 langgraph
 langchainhub
 streamlit 
+pyvis
