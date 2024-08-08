@@ -66,6 +66,12 @@ To solve this question, the following steps are necessary:
 7. Utilizing an ongoing updated plan made by an LLM to solve complicated questions. Some ideas are derived from "Plan-and-Solve Prompting" - https://arxiv.org/abs/2305.04091 and the "babyagi" project - https://github.com/yoheinakajima/babyagi.<br>
 8. Evaluating the model's performance using `Ragas` metrics like answer correctness, faithfulness, relevancy, recall, and similarity to ensure high-quality answers.<br>
 
+## Relevant Links 🔗
+
+- 🎥 [Lecture Video](https://www.youtube.com/watch?v=b4v7tjxQkvg&ab_channel=Machine%26DeepLearningIsrael)
+- 📝 [Medium Article](https://medium.com/@nirdiamant21/controllable-agent-for-complex-rag-tasks-bf8cb652fbb3)
+
+
 ## Installation 🛠️
 
 1. Clone the repository:
