@@ -134,3 +134,9 @@ Special thanks to Elad Levi for the valuable advice and ideas.
 ## 📄 License
 
 This project is licensed under the Apache-2.0 License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+⭐️ If you find this repository helpful, please consider giving it a star!
+
+Keywords: RAG, Retrieval-Augmented Generation, Agent, Langgraph, NLP, AI, Machine Learning, Information Retrieval, Natural Language Processing, LLM, Embeddings, Semantic Search
