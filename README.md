@@ -19,6 +19,7 @@ An advanced Retrieval-Augmented Generation (RAG) solution designed to tackle com
 - **Flexible LLM Integration**: Easily adaptable to work with various Language Models, not limited to specific providers.
 
 ## 🧠 How It Works
+![Solution Schema](graphs/final_graph_schema.jpeg)
 
 1. **PDF Loading and Processing**: Load PDF documents and split them into chapters.
 2. **Text Preprocessing**: Clean and preprocess the text for better summarization and encoding.
@@ -37,32 +38,6 @@ An advanced Retrieval-Augmented Generation (RAG) solution designed to tackle com
    - Verify that generated content is grounded in the original context.
    - Re-plan remaining steps based on new information.
 9. **Final Answer Generation**: Produce the final answer using accumulated context and chain-of-thought reasoning.
-
-## 🔗 Graph Flow Explanation
-
-![Solution Schema](graphs/final_graph_schema.jpeg)
-
-The algorithm represented by the graph follows these steps:
-
-1. Start with the user's question.<br>
-2. Anonymize the question by replacing named entities with variables and storing the mapping.<br>
-3. Generate a high-level plan to answer the anonymized question using a language model.<br>
-4. De-anonymize the plan by replacing the variables with the original named entities.<br>
-5. Break down the plan into individual tasks that involve either retrieving relevant information or answering a question based on a given context.<br>
-6. For each task in the plan:<br>
-&emsp;&emsp;a. Decide whether to retrieve information from chunks db, chapter summaries db, book quotes db, or answer a question based on the task and the current context.<br>
-&emsp;&emsp;b. If retrieving information:<br>
-&emsp;&emsp;&emsp;&emsp;i. Retrieve relevant information from one of the vector stores based on the task.<br>
-&emsp;&emsp;&emsp;&emsp;ii. Distill the retrieved information to keep only the relevant content.<br>
-&emsp;&emsp;&emsp;&emsp;iii. Verify that the distilled content is grounded in the original context. If not, distill the content again.<br>
-&emsp;&emsp;c. If answering a question:<br>
-&emsp;&emsp;&emsp;&emsp;i. Answer the question based on the current context using a language model, using chain of thought.<br>
-&emsp;&emsp;&emsp;&emsp;ii. Verify that the generated answer is grounded in the context. If not, answer the question again.<br>
-&emsp;&emsp;d. After retrieving or answering, re-plan the remaining steps based on the updated context.<br>
-&emsp;&emsp;e. Check if the original question can be answered with the current context. If so, proceed to the final answer step. Otherwise, continue with the next task in the plan.<br>
-7. Generate the final answer to the original question based on the accumulated context, using chain of thought.<br>
-8. Verify that the final answer is grounded in the context. If not, generate the final answer again.<br>
-9. Output the final answer to the user.<br>
 
 ## 📊 Evaluation
 
