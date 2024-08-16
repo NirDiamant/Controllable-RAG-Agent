@@ -102,7 +102,7 @@ The agent's ability to break down and solve such complex queries demonstrates it
 1. Clone the repository:
    ```sh
    git clone https://github.com/NirDiamant/Controllable-RAG-Agent.git
-   cd Deterministic-RAG-Agent
+   cd Controllable-RAG-Agent
    ```
 
 2. Install required packages:
