@@ -16,7 +16,6 @@ An advanced Retrieval-Augmented Generation (RAG) solution designed to tackle com
 - **Multi-step Reasoning**: Breaks down complex queries into manageable sub-tasks.
 - **Adaptive Planning**: Continuously updates its plan based on new information.
 - **Performance Evaluation**: Utilizes `Ragas` metrics for comprehensive quality assessment.
-- **Flexible LLM Integration**: Easily adaptable to work with various Language Models, not limited to specific providers.
 
 ## 🧠 How It Works
 ![Solution Schema](graphs/final_graph_schema.jpeg)
