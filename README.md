@@ -1,37 +1,48 @@
 # Sophisticated Controllable Agent for Complex RAG Tasks 🧠📚
 
-This repository showcases an advanced RAG (Retrieval-Augmented Generation) solution designed to tackle complex questions that simple semantic similarity-based retrieval cannot solve. The solution uses a sophisticated deterministic graph, which acts as the "brain" 🧠 of a highly controllable autonomous agent capable of answering non-trivial questions from your own data. The only elements treated as black boxes are the outputs of LLM-based (Large Language Model) functions, and these are closely monitored. Given that the data is yours, it is crucial to ensure that the answers provided are solely based on this data, avoiding any hallucinations.
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/release/python-380/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-To achieve this, the algorithm was tested using a familiar use case: the first book of Harry Potter. This choice allows for monitoring whether the model relies on its pre-trained knowledge or strictly on the retrieved information from vector stores.
+An advanced Retrieval-Augmented Generation (RAG) solution designed to tackle complex questions that simple semantic similarity-based retrieval cannot solve. This project showcases a sophisticated deterministic graph acting as the "brain" of a highly controllable autonomous agent capable of answering non-trivial questions from your own data.
 
-An indicator of the algorithm's reliability is its ability to fail at answering questions not found in the context. When it successfully answers a question derived from the context, it confirms that the solution is based on the actual data provided. If it fails, it is because the answer could not be deduced from the available data.
+![Demo](graphs/demo.gif)
 
-### Example of Such Questions 🔍
-#### How did the protagonist defeat the villain's assistant?
-To solve this question, the following steps are necessary:
+## 🌟 Key Features
 
-1. Identify the protagonist of the plot.
-2. Identify the villain.
-3. Identify the villain's assistant.
-4. Search for confrontations or interactions between the protagonist and the villain.
-5. Deduce the reason that led the protagonist to defeat the assistant.
+- **Sophisticated Deterministic Graph**: Acts as the "brain" of the agent, enabling complex reasoning.
+- **Controllable Autonomous Agent**: Capable of answering non-trivial questions from custom datasets.
+- **Hallucination Prevention**: Ensures answers are solely based on provided data, avoiding AI hallucinations.
+- **Multi-step Reasoning**: Breaks down complex queries into manageable sub-tasks.
+- **Adaptive Planning**: Continuously updates its plan based on new information.
+- **Performance Evaluation**: Utilizes `Ragas` metrics for comprehensive quality assessment.
+- **Flexible LLM Integration**: Easily adaptable to work with various Language Models, not limited to specific providers.
 
-## General Project Flow 📈
+## 🧠 How It Works
 
-1. **PDF Loading and Processing:** Load PDF documents and split them into chapters.
-2. **Text Preprocessing:** Clean and preprocess the text for better summarization and encoding.
-3. **Summarization:** Generate extensive summaries of each chapter using large language models.
-4. **Book Quotes Database Creation:** Create a database for specific questions that will need access to quotes from the book.
-5. **Vector Store Encoding:** Encode the book content and chapter summaries into vector stores for efficient retrieval.
-6. **Define Various LLM-Based Functions:** Define functions for the graph pipeline, including planning, retrieval, answering, replanning, content distillation, hallucination checking, etc.
-7. **Graph-Based Workflow:** Utilize a state graph to manage the workflow of tasks.
-8. **Performance Evaluation:** Evaluate how well the whole solution solved complicated questions.
+1. **PDF Loading and Processing**: Load PDF documents and split them into chapters.
+2. **Text Preprocessing**: Clean and preprocess the text for better summarization and encoding.
+3. **Summarization**: Generate extensive summaries of each chapter using large language models.
+4. **Book Quotes Database Creation**: Create a database for specific questions that will need access to quotes from the book.
+5. **Vector Store Encoding**: Encode the book content and chapter summaries into vector stores for efficient retrieval.
+6. **Question Processing**:
+   - Anonymize the question by replacing named entities with variables.
+   - Generate a high-level plan to answer the anonymized question.
+   - De-anonymize the plan and break it down into retrievable or answerable tasks.
+7. **Task Execution**:
+   - For each task, decide whether to retrieve information or answer based on context.
+   - If retrieving, fetch relevant information from vector stores and distill it.
+   - If answering, generate a response using chain-of-thought reasoning.
+8. **Verification and Re-planning**:
+   - Verify that generated content is grounded in the original context.
+   - Re-plan remaining steps based on new information.
+9. **Final Answer Generation**: Produce the final answer using accumulated context and chain-of-thought reasoning.
 
-## Suggested Deterministic Agent Solution Schema 💡
+## 🔗 Graph Flow Explanation
 
 ![Solution Schema](graphs/final_graph_schema.jpeg)
 
-## Algorithm Represented by the Graph 🔗
+The algorithm represented by the graph follows these steps:
 
 1. Start with the user's question.<br>
 2. Anonymize the question by replacing named entities with variables and storing the mapping.<br>
@@ -53,9 +64,76 @@ To solve this question, the following steps are necessary:
 8. Verify that the final answer is grounded in the context. If not, generate the final answer again.<br>
 9. Output the final answer to the user.<br>
 
-![Demo](graphs/demo.gif)
+## 📊 Evaluation
 
-## Heuristics and Techniques Implemented in This Solution ⚙️
+The solution is evaluated using `Ragas` metrics:
+- Answer Correctness
+- Faithfulness
+- Answer Relevancy
+- Context Recall
+- Answer Similarity
+
+## 🔍 Use Case: Harry Potter Book Analysis
+
+The algorithm was tested using the first Harry Potter book, allowing for monitoring of the model's reliance on retrieved information versus pre-trained knowledge. This choice enables us to verify whether the model is using its pre-trained knowledge or strictly relying on the retrieved information from vector stores.
+
+### Example Question
+**Q: How did the protagonist defeat the villain's assistant?**
+
+To solve this question, the following steps are necessary:
+
+1. Identify the protagonist of the plot.
+2. Identify the villain.
+3. Identify the villain's assistant.
+4. Search for confrontations or interactions between the protagonist and the villain.
+5. Deduce the reason that led the protagonist to defeat the assistant.
+
+The agent's ability to break down and solve such complex queries demonstrates its sophisticated reasoning capabilities.
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Python 3.8+
+- API key for your chosen LLM provider
+
+### Installation
+
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/NirDiamant/Controllable-RAG-Agent.git
+   cd Deterministic-RAG-Agent
+   ```
+
+2. Install required packages:
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+3. Set up environment variables:
+   Create a `.env` file in the root directory with your API key:
+   ```
+   LLM_API_KEY=your_llm_api_key
+   ```
+
+### Usage
+
+1. Explore the step-by-step tutorial: `sophisticated_rag_agent_harry_potter.ipynb`
+
+2. Run real-time agent visualization:
+   ```sh
+   streamlit run simulate_agent.py
+   ```
+
+## 🛠️ Technologies Used
+
+- LangChain
+- FAISS Vector Store
+- Streamlit (for visualization)
+- Ragas (for evaluation)
+- Flexible integration with various LLMs (e.g., OpenAI GPT models, Groq, or others of your choice)
+
+## 💡 Heuristics and Techniques
 
 1. Encoding both book content in chunks, chapter summaries generated by LLM, and quotes from the book.<br>
 2. Anonymizing the question to create a general plan without biases or pre-trained knowledge of any LLM involved.<br>
@@ -66,44 +144,19 @@ To solve this question, the following steps are necessary:
 7. Utilizing an ongoing updated plan made by an LLM to solve complicated questions. Some ideas are derived from "Plan-and-Solve Prompting" - https://arxiv.org/abs/2305.04091 and the "babyagi" project - https://github.com/yoheinakajima/babyagi.<br>
 8. Evaluating the model's performance using `Ragas` metrics like answer correctness, faithfulness, relevancy, recall, and similarity to ensure high-quality answers.<br>
 
-## Relevant Links 🔗
-
-- 🎥 [Lecture Video](https://www.youtube.com/watch?v=b4v7tjxQkvg&ab_channel=Machine%26DeepLearningIsrael)
-- 📝 [Medium Article](https://medium.com/@nirdiamant21/controllable-agent-for-complex-rag-tasks-bf8cb652fbb3)
-
-
-## Installation 🛠️
-
-1. Clone the repository:
-    ```sh
-    git clone https://github.com/NirDiamant/Deterministic-RAG-Agent.git
-    ```
-
-2. Install the required Python packages:
-    ```sh
-    pip install -r requirements.txt
-    ```
-
-3. Set up your environment variables (The models I used were trying to minimize the cost, but this is just a suggestion):
-    Create a `.env` file in the root directory and add your API keys:
-    ```
-    OPENAI_API_KEY=your_openai_api_key
-    GROQ_API_KEY=your_groq_api_key
-    ```
-
-4. Step-by-Step Tutorial Notebook: The step-by-step tutorial notebook is `sophisticated_rag_agent_harry_potter.ipynb`.
-
-5. Run a Real-Time Visualization of the Agent:
-    - Open CMD and type: `streamlit run simulate_agent.py`
-
-## Contributing 🤝
+## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a pull request or open an issue for any suggestions or improvements.
 
-## Special Thanks 🎉
+## 📚 Learn More
 
-Special thanks to Elad Levi for the great advising and ideas.
+- [Lecture Video](https://www.youtube.com/watch?v=b4v7tjxQkvg&ab_channel=Machine%26DeepLearningIsrael)
+- [Medium Article](https://medium.com/@nirdiamant21/controllable-agent-for-complex-rag-tasks-bf8cb652fbb3)
 
-## License 📜
+## 🙏 Acknowledgements
 
-This project is licensed under the Apache-2.0 License.
+Special thanks to Elad Levi for the valuable advice and ideas.
+
+## 📄 License
+
+This project is licensed under the Apache-2.0 License - see the [LICENSE](LICENSE) file for details.
