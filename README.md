@@ -13,7 +13,7 @@ An advanced Retrieval-Augmented Generation (RAG) solution designed to tackle com
 🔗 For discussions on GenAI, RAG, or custom agents, feel free to [connect on LinkedIn](https://www.linkedin.com/in/nir-diamant-759323134/).
 
 <!-- ![Demo](graphs/demo.gif) -->
-https://github.com/NirDiamant/Controllable-RAG-Agent/assets/video_demo.mp4
+https://github.com/NirDiamant/Controllable-RAG-Agent/blob/main/assets/video_demo.mp4
 
 ## 🌟 Key Features
 
