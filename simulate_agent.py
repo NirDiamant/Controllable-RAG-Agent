@@ -2,7 +2,7 @@ import tempfile
 from pyvis.network import Network
 import streamlit as st
 import streamlit.components.v1 as components
-from functions_for_pipeline import *
+import functions_for_pipeline as ffp
 
 
 def create_network_graph(current_state):
@@ -200,7 +200,7 @@ def main():
     st.title("Real-Time Agent Execution Visualization")
     
     # Load your existing agent creation function
-    plan_and_execute_app = create_agent()
+    plan_and_execute_app = ffp.create_agent()
 
     # Get the user's question
     question = st.text_input("Enter your question:", "what is the class that the proffessor who helped the villain is teaching?")
