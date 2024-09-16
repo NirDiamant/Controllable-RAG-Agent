@@ -4,7 +4,7 @@ from langchain.vectorstores import  FAISS
 from langchain.embeddings import OpenAIEmbeddings 
 from langchain.prompts import PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
-from langchain_core.output_parsers import JsonOutputParser
+# from langchain_core.output_parsers import JsonOutputParser
 
 from langgraph.graph import END, StateGraph
 
@@ -237,16 +237,16 @@ def create_is_relevant_content_chain():
         is_relevant: bool = Field(description="Whether the document is relevant to the query.")
         explanation: str = Field(description="An explanation of why the document is relevant or not.")
 
-    is_relevant_json_parser = JsonOutputParser(pydantic_object=Relevance)
+    # is_relevant_json_parser = JsonOutputParser(pydantic_object=Relevance)
     # is_relevant_llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=groq_api_key, max_tokens=4000)
     is_relevant_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
 
     is_relevant_content_prompt = PromptTemplate(
         template=is_relevant_content_prompt_template,
         input_variables=["query", "context"],
-        partial_variables={"format_instructions": is_relevant_json_parser.get_format_instructions()},
+        # partial_variables={"format_instructions": is_relevant_json_parser.get_format_instructions()},
     )
-    is_relevant_content_chain = is_relevant_content_prompt | is_relevant_llm | is_relevant_json_parser
+    is_relevant_content_chain = is_relevant_content_prompt | is_relevant_llm.with_structured_output(Relevance)
     return is_relevant_content_chain
 
 is_relevant_content_chain = create_is_relevant_content_chain()
@@ -310,17 +310,17 @@ def create_can_be_answered_chain():
         can_be_answered: bool = Field(description="binary result of whether the question can be fully answered or not")
         explanation: str = Field(description="An explanation of why the question can be fully answered or not.")
 
-    can_be_answered_json_parser = JsonOutputParser(pydantic_object=QuestionAnswer)
+    # can_be_answered_json_parser = JsonOutputParser(pydantic_object=QuestionAnswer)
 
     answer_question_prompt = PromptTemplate(
         template=can_be_answered_prompt_template,
         input_variables=["question","context"],
-        partial_variables={"format_instructions": can_be_answered_json_parser.get_format_instructions()},
+        # partial_variables={"format_instructions": can_be_answered_json_parser.get_format_instructions()},
     )
 
     # can_be_answered_llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=groq_api_key, max_tokens=4000)
     can_be_answered_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
-    can_be_answered_chain = answer_question_prompt | can_be_answered_llm | can_be_answered_json_parser
+    can_be_answered_chain = answer_question_prompt | can_be_answered_llm.with_structured_output(QuestionAnswer)
     return can_be_answered_chain
 
 
@@ -335,18 +335,18 @@ def create_is_distilled_content_grounded_on_content_chain():
         grounded: bool = Field(description="Whether the distilled content is grounded on the original context.")
         explanation: str = Field(description="An explanation of why the distilled content is or is not grounded on the original context.")
 
-    is_distilled_content_grounded_on_content_json_parser = JsonOutputParser(pydantic_object=IsDistilledContentGroundedOnContent)
+    # is_distilled_content_grounded_on_content_json_parser = JsonOutputParser(pydantic_object=IsDistilledContentGroundedOnContent)
 
     is_distilled_content_grounded_on_content_prompt = PromptTemplate(
         template=is_distilled_content_grounded_on_content_prompt_template,
         input_variables=["distilled_content", "original_context"],
-        partial_variables={"format_instructions": is_distilled_content_grounded_on_content_json_parser.get_format_instructions()},
+        # partial_variables={"format_instructions": is_distilled_content_grounded_on_content_json_parser.get_format_instructions()},
     )
 
     # is_distilled_content_grounded_on_content_llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=groq_api_key, max_tokens=4000)
     is_distilled_content_grounded_on_content_llm =ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
 
-    is_distilled_content_grounded_on_content_chain = is_distilled_content_grounded_on_content_prompt | is_distilled_content_grounded_on_content_llm | is_distilled_content_grounded_on_content_json_parser
+    is_distilled_content_grounded_on_content_chain = is_distilled_content_grounded_on_content_prompt | is_distilled_content_grounded_on_content_llm.with_structured_output(IsDistilledContentGroundedOnContent)
     return is_distilled_content_grounded_on_content_chain
 
 is_distilled_content_grounded_on_content_chain = create_is_distilled_content_grounded_on_content_chain()
@@ -636,7 +636,7 @@ def create_replanner_chain():
         explanation: str = Field(description="Explanation of the action.")
         
 
-    act_possible_results_parser = JsonOutputParser(pydantic_object=ActPossibleResults)
+    # act_possible_results_parser = JsonOutputParser(pydantic_object=ActPossibleResults)
 
     replanner_prompt_template =""" For the given objective, come up with a simple step by step plan of how to figure out the answer. 
     This plan should involve individual tasks, that if executed correctly will yield the correct answer. Do not add any superfluous steps. 
@@ -668,14 +668,14 @@ def create_replanner_chain():
     replanner_prompt = PromptTemplate(
         template=replanner_prompt_template,
         input_variables=["question", "plan", "past_steps", "aggregated_context"],
-        partial_variables={"format_instructions": act_possible_results_parser.get_format_instructions()},
+        # partial_variables={"format_instructions": act_possible_results_parser.get_format_instructions()},
     )
 
     replanner_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
 
 
 
-    replanner = replanner_prompt | replanner_llm | act_possible_results_parser
+    replanner = replanner_prompt | replanner_llm.with_structured_output(ActPossibleResults)
     return replanner
 
 def create_task_handler_chain():
@@ -723,7 +723,7 @@ def create_anonymize_question_chain():
         mapping: dict = Field(description="Mapping of original name entities to variables.")
         explanation: str = Field(description="Explanation of the action.")
 
-    anonymize_question_parser = JsonOutputParser(pydantic_object=AnonymizeQuestion)
+    # anonymize_question_parser = JsonOutputParser(pydantic_object=AnonymizeQuestion)
 
 
     anonymize_question_prompt_template = """ You are a question anonymizer. The input You receive is a string containing several words that
@@ -741,11 +741,11 @@ def create_anonymize_question_chain():
     anonymize_question_prompt = PromptTemplate(
         template=anonymize_question_prompt_template,
         input_variables=["question"],
-        partial_variables={"format_instructions": anonymize_question_parser.get_format_instructions()},
+        # partial_variables={"format_instructions": anonymize_question_parser.get_format_instructions()},
     )
 
     anonymize_question_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
-    anonymize_question_chain = anonymize_question_prompt | anonymize_question_llm | anonymize_question_parser
+    anonymize_question_chain = anonymize_question_prompt | anonymize_question_llm.with_structured_output(AnonymizeQuestion)
     return anonymize_question_chain
 
 
