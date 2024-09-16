@@ -1,5 +1,5 @@
 from langchain_openai import ChatOpenAI 
-from langchain_groq import ChatGroq
+# from langchain_groq import ChatGroq
 from langchain.vectorstores import  FAISS
 from langchain.embeddings import OpenAIEmbeddings 
 from langchain.prompts import PromptTemplate
@@ -27,7 +27,7 @@ Set the environment variables for the API keys.
 load_dotenv()
 os.environ["PYDEVD_WARN_EVALUATION_TIMEOUT"] = "100000"
 os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY')
-groq_api_key = os.getenv('GROQ_API_KEY')
+# groq_api_key = os.getenv('GROQ_API_KEY')
 
 
 
@@ -238,7 +238,8 @@ def create_is_relevant_content_chain():
         explanation: str = Field(description="An explanation of why the document is relevant or not.")
 
     is_relevant_json_parser = JsonOutputParser(pydantic_object=Relevance)
-    is_relevant_llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=groq_api_key, max_tokens=4000)
+    # is_relevant_llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=groq_api_key, max_tokens=4000)
+    is_relevant_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
 
     is_relevant_content_prompt = PromptTemplate(
         template=is_relevant_content_prompt_template,
@@ -317,7 +318,8 @@ def create_can_be_answered_chain():
         partial_variables={"format_instructions": can_be_answered_json_parser.get_format_instructions()},
     )
 
-    can_be_answered_llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=groq_api_key, max_tokens=4000)
+    # can_be_answered_llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=groq_api_key, max_tokens=4000)
+    can_be_answered_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
     can_be_answered_chain = answer_question_prompt | can_be_answered_llm | can_be_answered_json_parser
     return can_be_answered_chain
 
@@ -341,7 +343,8 @@ def create_is_distilled_content_grounded_on_content_chain():
         partial_variables={"format_instructions": is_distilled_content_grounded_on_content_json_parser.get_format_instructions()},
     )
 
-    is_distilled_content_grounded_on_content_llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=groq_api_key, max_tokens=4000)
+    # is_distilled_content_grounded_on_content_llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=groq_api_key, max_tokens=4000)
+    is_distilled_content_grounded_on_content_llm =ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
 
     is_distilled_content_grounded_on_content_chain = is_distilled_content_grounded_on_content_prompt | is_distilled_content_grounded_on_content_llm | is_distilled_content_grounded_on_content_json_parser
     return is_distilled_content_grounded_on_content_chain
