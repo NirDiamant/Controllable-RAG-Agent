@@ -139,7 +139,7 @@ Contributions are welcome! Please feel free to submit a pull request or open an 
 ## 📚 Learn More
 
 - [Lecture Video](https://www.youtube.com/watch?v=b4v7tjxQkvg&ab_channel=Machine%26DeepLearningIsrael)
-- [Medium Article](https://medium.com/@nirdiamant21/controllable-agent-for-complex-rag-tasks-bf8cb652fbb3)
+- [Blog Post Article](https://open.substack.com/pub/diamantai/p/controllable-agent-for-complex-rag?r=336pe4&utm_campaign=post&utm_medium=web)
 
 ## 🙏 Acknowledgements
 
