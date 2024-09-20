@@ -1,10 +1,10 @@
 from langchain_openai import ChatOpenAI 
 # from langchain_groq import ChatGroq
 from langchain.vectorstores import  FAISS
-from langchain.embeddings import OpenAIEmbeddings 
+from langchain_openai import OpenAIEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
-# from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.output_parsers import JsonOutputParser
 
 from langgraph.graph import END, StateGraph
 
@@ -229,9 +229,7 @@ def answer_question_from_context(state):
 def create_is_relevant_content_chain():
 
     is_relevant_content_prompt_template = """you receive a query: {query} and a context: {context} retrieved from a vector store. 
-    You need to determine if the document is relevant to the query. 
-
-    {format_instructions}"""
+    You need to determine if the document is relevant to the query. """
 
     class Relevance(BaseModel):
         is_relevant: bool = Field(description="Whether the document is relevant to the query.")
@@ -302,9 +300,7 @@ def create_is_grounded_on_facts_chain():
 
 def create_can_be_answered_chain():
     can_be_answered_prompt_template = """You receive a query: {question} and a context: {context}. 
-    You need to determine if the question can be fully answered based on the context.
-    {format_instructions}
-    """
+    You need to determine if the question can be fully answered based on the context."""
 
     class QuestionAnswer(BaseModel):
         can_be_answered: bool = Field(description="binary result of whether the question can be fully answered or not")
@@ -328,7 +324,7 @@ def create_is_distilled_content_grounded_on_content_chain():
     is_distilled_content_grounded_on_content_prompt_template = """you receive some distilled content: {distilled_content} and the original context: {original_context}.
         you need to determine if the distilled content is grounded on the original context.
         if the distilled content is grounded on the original context, set the grounded field to true.
-        if the distilled content is not grounded on the original context, set the grounded field to false. {format_instructions}"""
+        if the distilled content is not grounded on the original context, set the grounded field to false."""
     
 
     class IsDistilledContentGroundedOnContent(BaseModel):
@@ -375,7 +371,7 @@ def is_distilled_content_grounded_on_content(state):
     }
 
     output = is_distilled_content_grounded_on_content_chain.invoke(input_data)
-    grounded = output["grounded"]
+    grounded = output.grounded
 
     if grounded:
         print("The distilled content is grounded on the original context.")
@@ -630,10 +626,10 @@ def create_break_down_plan_chain():
     return break_down_plan_chain
 
 def create_replanner_chain():
-    class ActPossibleResults(BaseModel):
-        """Possible results of the action."""
-        plan: Plan = Field(description="Plan to follow in future.")
-        explanation: str = Field(description="Explanation of the action.")
+    # class ActPossibleResults(BaseModel):
+    #     """Possible results of the action."""
+    #     plan: Plan = Field(description="Plan to follow in future.")
+    #     explanation: str = Field(description="Explanation of the action.")
         
 
     # act_possible_results_parser = JsonOutputParser(pydantic_object=ActPossibleResults)
@@ -661,8 +657,6 @@ def create_replanner_chain():
 
     the format is json so escape quotes and new lines.
 
-    {format_instructions}
-
     """
 
     replanner_prompt = PromptTemplate(
@@ -675,7 +669,7 @@ def create_replanner_chain():
 
 
 
-    replanner = replanner_prompt | replanner_llm.with_structured_output(ActPossibleResults)
+    replanner = replanner_prompt | replanner_llm.with_structured_output(Plan)
     return replanner
 
 def create_task_handler_chain():
@@ -723,7 +717,7 @@ def create_anonymize_question_chain():
         mapping: dict = Field(description="Mapping of original name entities to variables.")
         explanation: str = Field(description="Explanation of the action.")
 
-    # anonymize_question_parser = JsonOutputParser(pydantic_object=AnonymizeQuestion)
+    anonymize_question_parser = JsonOutputParser(pydantic_object=AnonymizeQuestion)
 
 
     anonymize_question_prompt_template = """ You are a question anonymizer. The input You receive is a string containing several words that
@@ -734,18 +728,19 @@ def create_anonymize_question_chain():
             if the input is \"how did the bad guy played with the alex and rony?\"
             the output should be \"how did the X played with the Y and Z?\" and the mapping should be {{\"X\": \"bad guy\", \"Y\": \"alex\", \"Z\": \"rony\"}}```
     you must replace all name entities in the input with variables, and remember the mapping of the original name entities to the variables.
-    output the anonymized question and the mapping in a json format. {format_instructions}"""
+    output the anonymized question and the mapping as two separate fields in a json format as described here, without any additional text apart from the json format.
+   """
 
 
 
     anonymize_question_prompt = PromptTemplate(
         template=anonymize_question_prompt_template,
         input_variables=["question"],
-        # partial_variables={"format_instructions": anonymize_question_parser.get_format_instructions()},
+        partial_variables={"format_instructions": anonymize_question_parser.get_format_instructions()},
     )
 
     anonymize_question_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
-    anonymize_question_chain = anonymize_question_prompt | anonymize_question_llm.with_structured_output(AnonymizeQuestion)
+    anonymize_question_chain = anonymize_question_prompt | anonymize_question_llm | anonymize_question_parser
     return anonymize_question_chain
 
 
@@ -995,9 +990,12 @@ def anonymize_queries(state: PlanExecute):
         The updated state with the anonymized question and mapping.
     """
     state["curr_state"] = "anonymize_question"
+    print("state['question']: ", state['question'])
     print("Anonymizing question")
     pprint("--------------------")
-    anonymized_question_output = anonymize_question_chain.invoke(state['question'])
+    input_values = {"question": state['question']}
+    anonymized_question_output = anonymize_question_chain.invoke(input_values)
+    print(f'anonymized_question_output: {anonymized_question_output}')
     anonymized_question = anonymized_question_output["anonymized_question"]
     print(f'anonimized_querry: {anonymized_question}')
     pprint("--------------------")
@@ -1070,8 +1068,8 @@ def replan_step(state: PlanExecute):
     print("Replanning step")
     pprint("--------------------")
     inputs = {"question": state["question"], "plan": state["plan"], "past_steps": state["past_steps"], "aggregated_context": state["aggregated_context"]}
-    output = replanner.invoke(inputs)
-    state["plan"] = output['plan']['steps']
+    plan = replanner.invoke(inputs)
+    state["plan"] = plan.steps
     return state
 
 
