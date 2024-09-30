@@ -70,6 +70,7 @@ def split_into_chapters(book_path):
     with open(book_path, 'rb') as pdf_file:
         pdf_reader = PyPDF2.PdfReader(pdf_file)
         documents = pdf_reader.pages  # Get all pages from the PDF
+        print("Documents: ", documents)
 
         # Concatenate text from all pages
         text = " ".join([doc.extract_text() for doc in documents])

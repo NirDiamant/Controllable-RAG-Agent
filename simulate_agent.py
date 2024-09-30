@@ -5,6 +5,8 @@ import streamlit.components.v1 as components
 from functions_for_pipeline import *
 
 
+# PyPDF2 pyvis pylcs
+
 def create_network_graph(current_state):
     """
     Create a network graph visualization of the agent's current state.
