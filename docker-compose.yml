@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8501:8501"  # Streamlit default port
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}  # Reference to your API key in the .env file
+      - GROQ_API_KEY=${GROQ_API_KEY}  # Reference to your API key in the .env file
+    volumes:
+      - .:/app  # Optional: mount the current directory for live updates
