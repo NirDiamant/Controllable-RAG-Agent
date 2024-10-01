@@ -85,33 +85,44 @@ The agent's ability to break down and solve such complex queries demonstrates it
 - Python 3.8+
 - API key for your chosen LLM provider
 
-### Installation
+### Installation (without Docker)
 
 1. Clone the repository:
    ```sh
    git clone https://github.com/NirDiamant/Controllable-RAG-Agent.git
    cd Controllable-RAG-Agent
    ```
+2. Set up environment variables:
+   Create a `.env` file in the root directory with your API key: 
+   ```
+   OPENAI_API_KEY=
+   GROQ_API_KEY=
+   ```
+   you can look at the `.env.example` file for reference.
 
-2. Install required packages:
+## using Docker
+3. run the following command to build the docker image
+   ```sh
+   docker-compose up --build
+   ```
+
+## Installation (without Docker)
+3. Install required packages:
    ```sh
    pip install -r requirements.txt
-   ```
-
-3. Set up environment variables:
-   Create a `.env` file in the root directory with your API key:
-   ```
-   LLM_API_KEY=your_llm_api_key
    ```
 
 ### Usage
 
 1. Explore the step-by-step tutorial: `sophisticated_rag_agent_harry_potter.ipynb`
 
-2. Run real-time agent visualization:
+2. Run real-time agent visualization (no docker):
    ```sh
    streamlit run simulate_agent.py
    ```
+
+3. Run real-time agent visualization (with docker):
+   open your browser and go to `http://localhost:8501/`
 
 ## 🛠️ Technologies Used
 
