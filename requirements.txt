@@ -141,8 +141,8 @@ pure-eval==0.2.2
 pyarrow==16.1.0
 pyarrow-hotfix==0.6
 pybind11==2.12.0
-pydantic==2.7.1
-pydantic_core==2.18.2
+pydantic>=1.9.0
+pydantic_core>=2.18.2
 pydeck==0.9.1
 pyee==11.1.0
 Pygments==2.18.0
@@ -157,7 +157,7 @@ python-dotenv==1.0.1
 pytz==2024.1
 pyvis==0.3.2
 pyviz_comms==3.0.2
-pywin32==306
+pywin32==306; platform_system == "Windows"
 PyYAML==6.0.1
 pyzmq==26.0.3
 ragas==0.1.7
