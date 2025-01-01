@@ -9,6 +9,9 @@
 
 An advanced Retrieval-Augmented Generation (RAG) solution designed to tackle complex questions that simple semantic similarity-based retrieval cannot solve. This project showcases a sophisticated deterministic graph acting as the "brain" of a highly controllable autonomous agent capable of answering non-trivial questions from your own data.
 
+![Demo](graphs/demo.gif)
+
+
 📚 Explore my **[comprehensive guide on RAG techniques](https://github.com/NirDiamant/RAG_Techniques)** to complement this advanced agent implementation with many other RAG techniques.
 
 🤖 Explore my **[GenAI Agents Repository](https://github.com/NirDiamant/GenAI_Agents)** to complement this advanced agent implementation with many other AI Agents implementations and tutorials.
@@ -32,7 +35,6 @@ An advanced Retrieval-Augmented Generation (RAG) solution designed to tackle com
 [![DiamantAI's newsletter](assets/substack_image.png)](https://diamantai.substack.com/?r=336pe4&utm_campaign=pub-share-checklist)
 
 
-![Demo](graphs/demo.gif)
 <!-- https://github.com/NirDiamant/Controllable-RAG-Agent/blob/main/assets/video_demo.mp4 -->
 <!-- [![YouTube](http://i.ytimg.com/vi/_73OV1z3sTg/hqdefault.jpg)](https://www.youtube.com/watch?v=_73OV1z3sTg) -->
 
