@@ -1,3 +1,15 @@
+# allow specific files:
+
+# allow mp4 files
+!*.mp4
+
+
+# allow specific directories:
+
+# allow the assets directory
+!assets/
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -120,3 +132,4 @@ venv.bak/
 
 docs/
 output/
+
