@@ -29,7 +29,7 @@ An advanced Retrieval-Augmented Generation (RAG) solution designed to tackle com
 
 [![Subscribe to DiamantAI Newsletter](assets/subscribe-button.svg)](https://diamantai.substack.com/?r=336pe4&utm_campaign=pub-share-checklist)
 
-*Join thousands of AI enthusiasts getting unique cutting edge insights and free tutorials!*
+*Join over 10,000 of AI enthusiasts getting unique cutting-edge insights and free tutorials!* ***Plus, subscribers get exclusive early access and special discounts to our upcoming RAG Techniques course!***
 </div>
 
 [![DiamantAI's newsletter](assets/substack_image.png)](https://diamantai.substack.com/?r=336pe4&utm_campaign=pub-share-checklist)
