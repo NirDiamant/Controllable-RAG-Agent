@@ -132,4 +132,5 @@ venv.bak/
 
 docs/
 output/
-
+*.pdf 
+helper_functions.py
