@@ -22,18 +22,20 @@ from helper_functions import escape_quotes, text_wrap
 
 
 """
-Set the environment variables for the API keys.
+Resolve API credentials without mutating global environment variables.
+When Forge is configured, its key/base take priority; otherwise fall back to
+the standard OPENAI_API_KEY.
 """
 load_dotenv()
 os.environ["PYDEVD_WARN_EVALUATION_TIMEOUT"] = "100000"
 forge_api_key = os.getenv("FORGE_API_KEY")
 forge_api_base = os.getenv("FORGE_API_BASE") or "https://api.forge.tensorblock.co/v1"
 if forge_api_key:
-    os.environ["OPENAI_API_KEY"] = forge_api_key
-    os.environ["OPENAI_BASE_URL"] = forge_api_base
-    os.environ["OPENAI_API_BASE"] = forge_api_base
-elif os.getenv("OPENAI_API_KEY"):
-    os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+    _openai_api_key = forge_api_key
+    _openai_api_base = forge_api_base
+else:
+    _openai_api_key = os.getenv("OPENAI_API_KEY")
+    _openai_api_base = None  # use LangChain / OpenAI SDK default
 # groq_api_key = os.getenv('GROQ_API_KEY')
 
 def _forge_model_name(model_name: str) -> str:
@@ -46,13 +48,22 @@ def create_chat_llm(**kwargs):
     model_name = kwargs.get("model_name")
     if model_name:
         kwargs["model_name"] = _forge_model_name(model_name)
+    if _openai_api_key:
+        kwargs.setdefault("openai_api_key", _openai_api_key)
+    if _openai_api_base:
+        kwargs.setdefault("openai_api_base", _openai_api_base)
     return ChatOpenAI(**kwargs)
 
 
 def create_embeddings():
+    embed_kwargs = {}
+    if _openai_api_key:
+        embed_kwargs["openai_api_key"] = _openai_api_key
+    if _openai_api_base:
+        embed_kwargs["openai_api_base"] = _openai_api_base
     if forge_api_key:
-        return OpenAIEmbeddings(model=_forge_model_name("text-embedding-3-small"))
-    return OpenAIEmbeddings()
+        embed_kwargs["model"] = _forge_model_name("text-embedding-3-small")
+    return OpenAIEmbeddings(**embed_kwargs)
 
 
 
