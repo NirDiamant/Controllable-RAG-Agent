@@ -1,4 +1,4 @@
-from langchain_openai import ChatOpenAI 
+from langchain_openai import ChatOpenAI
 # from langchain_groq import ChatGroq
 from langchain.vectorstores import  FAISS
 from langchain_openai import OpenAIEmbeddings
@@ -18,6 +18,7 @@ from typing import List, TypedDict
 
 ### Helper functions for the notebook
 from helper_functions import escape_quotes, text_wrap
+from llm_provider import get_chat_llm, get_embeddings
 
 
 
@@ -32,7 +33,7 @@ os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY')
 
 
 def create_retrievers():
-    embeddings = OpenAIEmbeddings()
+    embeddings = get_embeddings()
     chunks_vector_store =  FAISS.load_local("chunks_vector_store", embeddings, allow_dangerous_deserialization=True)
     chapter_summaries_vector_store =  FAISS.load_local("chapter_summaries_vector_store", embeddings, allow_dangerous_deserialization=True)
     book_quotes_vectorstore =  FAISS.load_local("book_quotes_vectorstore", embeddings, allow_dangerous_deserialization=True)
@@ -103,7 +104,7 @@ def create_keep_only_relevant_content_chain():
     )
 
 
-    keep_only_relevant_content_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    keep_only_relevant_content_llm = get_chat_llm(temperature=0, model_name="gpt-4o", max_tokens=2000)
     keep_only_relevant_content_chain = keep_only_relevant_content_prompt | keep_only_relevant_content_llm.with_structured_output(KeepRelevantContent)
     return keep_only_relevant_content_chain
 
@@ -141,7 +142,7 @@ def create_question_answer_from_context_cot_chain():
     class QuestionAnswerFromContext(BaseModel):
         answer_based_on_content: str = Field(description="generates an answer to a query based on a given context.")
 
-    question_answer_from_context_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    question_answer_from_context_llm = get_chat_llm(temperature=0, model_name="gpt-4o", max_tokens=2000)
 
 
     question_answer_cot_prompt_template = """ 
@@ -237,7 +238,7 @@ def create_is_relevant_content_chain():
 
     # is_relevant_json_parser = JsonOutputParser(pydantic_object=Relevance)
     # is_relevant_llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=groq_api_key, max_tokens=4000)
-    is_relevant_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    is_relevant_llm = get_chat_llm(temperature=0, model_name="gpt-4o", max_tokens=2000)
 
     is_relevant_content_prompt = PromptTemplate(
         template=is_relevant_content_prompt_template,
@@ -284,7 +285,7 @@ def create_is_grounded_on_facts_chain():
         """
         grounded_on_facts: bool = Field(description="Answer is grounded in the facts, 'yes' or 'no'")
 
-    is_grounded_on_facts_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    is_grounded_on_facts_llm = get_chat_llm(temperature=0, model_name="gpt-4o", max_tokens=2000)
     is_grounded_on_facts_prompt_template = """You are a fact-checker that determines if the given answer {answer} is grounded in the given context {context}
     you don't mind if it doesn't make sense, as long as it is grounded in the context.
     output a json containing the answer to the question, and appart from the json format don't output any additional text.
@@ -315,7 +316,7 @@ def create_can_be_answered_chain():
     )
 
     # can_be_answered_llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=groq_api_key, max_tokens=4000)
-    can_be_answered_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    can_be_answered_llm = get_chat_llm(temperature=0, model_name="gpt-4o", max_tokens=2000)
     can_be_answered_chain = answer_question_prompt | can_be_answered_llm.with_structured_output(QuestionAnswer)
     return can_be_answered_chain
 
@@ -340,7 +341,7 @@ def create_is_distilled_content_grounded_on_content_chain():
     )
 
     # is_distilled_content_grounded_on_content_llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=groq_api_key, max_tokens=4000)
-    is_distilled_content_grounded_on_content_llm =ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    is_distilled_content_grounded_on_content_llm =get_chat_llm(temperature=0, model_name="gpt-4o", max_tokens=2000)
 
     is_distilled_content_grounded_on_content_chain = is_distilled_content_grounded_on_content_prompt | is_distilled_content_grounded_on_content_llm.with_structured_output(IsDistilledContentGroundedOnContent)
     return is_distilled_content_grounded_on_content_chain
@@ -594,7 +595,7 @@ def create_plan_chain():
         input_variables=["question"], 
         )
 
-    planner_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    planner_llm = get_chat_llm(temperature=0, model_name="gpt-4o", max_tokens=2000)
 
     planner = planner_prompt | planner_llm.with_structured_output(Plan)
     return planner
@@ -619,7 +620,7 @@ def create_break_down_plan_chain():
         input_variables=["plan"],
     )
 
-    break_down_plan_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    break_down_plan_llm = get_chat_llm(temperature=0, model_name="gpt-4o", max_tokens=2000)
 
     break_down_plan_chain = break_down_plan_prompt | break_down_plan_llm.with_structured_output(Plan)
 
@@ -665,7 +666,7 @@ def create_replanner_chain():
         # partial_variables={"format_instructions": act_possible_results_parser.get_format_instructions()},
     )
 
-    replanner_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    replanner_llm = get_chat_llm(temperature=0, model_name="gpt-4o", max_tokens=2000)
 
 
 
@@ -706,7 +707,7 @@ def create_task_handler_chain():
         input_variables=["curr_task", "aggregated_context", "last_tool" "past_steps", "question"],
     )
 
-    task_handler_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    task_handler_llm = get_chat_llm(temperature=0, model_name="gpt-4o", max_tokens=2000)
     task_handler_chain = task_handler_prompt | task_handler_llm.with_structured_output(TaskHandlerOutput)
     return task_handler_chain
 
@@ -739,7 +740,7 @@ def create_anonymize_question_chain():
         partial_variables={"format_instructions": anonymize_question_parser.get_format_instructions()},
     )
 
-    anonymize_question_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    anonymize_question_llm = get_chat_llm(temperature=0, model_name="gpt-4o", max_tokens=2000)
     anonymize_question_chain = anonymize_question_prompt | anonymize_question_llm | anonymize_question_parser
     return anonymize_question_chain
 
@@ -761,7 +762,7 @@ def create_deanonymize_plan_chain():
         input_variables=["plan", "mapping"],
     )
 
-    de_anonymize_plan_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    de_anonymize_plan_llm = get_chat_llm(temperature=0, model_name="gpt-4o", max_tokens=2000)
     de_anonymize_plan_chain = de_anonymize_plan_prompt | de_anonymize_plan_llm.with_structured_output(DeAnonymizePlan)
     return de_anonymize_plan_chain
 
@@ -782,7 +783,7 @@ def create_can_be_answered_already_chain():
         input_variables=["question","context"],
     )
 
-    can_be_answered_already_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    can_be_answered_already_llm = get_chat_llm(temperature=0, model_name="gpt-4o", max_tokens=2000)
     can_be_answered_already_chain = can_be_answered_already_prompt | can_be_answered_already_llm.with_structured_output(CanBeAnsweredAlready)
     return can_be_answered_already_chain
 

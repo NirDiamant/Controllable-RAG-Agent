@@ -103,6 +103,13 @@ The agent's ability to break down and solve such complex queries demonstrates it
 - Python 3.8+
 - API key for your chosen LLM provider
 
+### Supported LLM Providers
+
+| Provider | Models | Environment Variables |
+|----------|--------|-----------------------|
+| **OpenAI** (default) | gpt-4o | `OPENAI_API_KEY` |
+| **[MiniMax](https://platform.minimaxi.com/)** | MiniMax-M2.5, MiniMax-M2.5-highspeed (204K context) | `MINIMAX_API_KEY`, `LLM_PROVIDER=minimax` |
+
 ### Installation (without Docker)
 
 1. Clone the repository:
@@ -111,12 +118,20 @@ The agent's ability to break down and solve such complex queries demonstrates it
    cd Controllable-RAG-Agent
    ```
 2. Set up environment variables:
-   Create a `.env` file in the root directory with your API key: 
+   Create a `.env` file in the root directory with your API key:
    ```
    OPENAI_API_KEY=
    GROQ_API_KEY=
    ```
    you can look at the `.env.example` file for reference.
+
+   **To use MiniMax as your LLM provider**, set the following in your `.env`:
+   ```
+   LLM_PROVIDER=minimax
+   MINIMAX_API_KEY=your_minimax_api_key
+   MINIMAX_MODEL=MiniMax-M2.5  # or MiniMax-M2.5-highspeed for 204K context
+   ```
+   > **Note:** MiniMax uses an OpenAI-compatible API, so you still need `OPENAI_API_KEY` for embeddings (FAISS vector stores).
 
 ## using Docker
 3. run the following command to build the docker image
