@@ -4,7 +4,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue)](https://www.linkedin.com/in/nir-diamant-759323134/)
 [![Twitter](https://img.shields.io/twitter/follow/NirDiamantAI?label=Follow%20@NirDiamantAI&style=social)](https://twitter.com/NirDiamantAI)
-[![Discord](https://img.shields.io/badge/Discord-Join%20our%20community-7289da?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/8PSA7s5v)
+[![Discord](https://img.shields.io/badge/Discord-Join%20our%20community-7289da?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/cA6Aa4uyDX)
 
 
 An advanced Retrieval-Augmented Generation (RAG) solution designed to tackle complex questions that simple semantic similarity-based retrieval cannot solve. This project showcases a sophisticated deterministic graph acting as the "brain" of a highly controllable autonomous agent capable of answering non-trivial questions from your own data.
@@ -267,10 +267,9 @@ This demonstrates sophisticated reasoning beyond simple retrieval.
 ### What LLM providers are supported?
 
 The agent is built on LangGraph and supports:
-- **OpenAI** — GPT-4, GPT-3.5
-- **Anthropic** — Claude models
-- **Local models** — Via Ollama or other local LLM providers
-- **Any LangChain-compatible provider**
+- **OpenAI** — used by default (`gpt-4o`)
+- **Groq** — wired up in `functions_for_pipeline.py` for fast inference
+- **Any LangChain-compatible provider** — swap the chat model in `functions_for_pipeline.py`
 
 ### How do I get started?
 
@@ -316,7 +315,7 @@ Apache 2.0 License — open-source, free to use commercially.
 ### Where can I get help?
 
 - **GitHub Issues**: [github.com/NirDiamant/Controllable-RAG-Agent/issues](https://github.com/NirDiamant/Controllable-RAG-Agent/issues)
-- **Discord**: [Join our community](https://discord.gg/8PSA7s5v)
+- **Discord**: [Join our community](https://discord.gg/cA6Aa4uyDX)
 - **Twitter**: [@NirDiamantAI](https://twitter.com/NirDiamantAI)
 - **LinkedIn**: [Connect](https://www.linkedin.com/in/nir-diamant-759323134/)
 - **Newsletter**: [DiamantAI Substack](https://diamantai.substack.com) — 20,000+ subscribers
