@@ -201,3 +201,123 @@ This project is licensed under the Apache-2.0 License - see the [LICENSE](LICENS
 ⭐️ If you find this repository helpful, please consider giving it a star!
 
 Keywords: RAG, Retrieval-Augmented Generation, Agent, Langgraph, NLP, AI, Machine Learning, Information Retrieval, Natural Language Processing, LLM, Embeddings, Semantic Search
+## FAQ
+
+### What is the Controllable RAG Agent?
+
+The Controllable RAG Agent is an advanced Retrieval-Augmented Generation (RAG) solution designed to tackle complex questions that simple semantic similarity-based retrieval cannot solve. It showcases a sophisticated deterministic graph acting as the "brain" of a highly controllable autonomous agent capable of answering non-trivial questions from your own data.
+
+### How does it differ from traditional RAG systems?
+
+- **Controllable RAG Agent**: Deterministic graph-based reasoning, multi-step task decomposition, hallucination prevention, adaptive planning, verification and re-planning loops
+- **Traditional RAG**: Single-step semantic similarity retrieval, direct answer generation without complex reasoning, no verification mechanisms
+- **LangChain RAG**: Chain-based retrieval, simpler orchestration, less sophisticated reasoning
+
+The Controllable RAG Agent handles questions requiring multi-hop reasoning and complex task decomposition.
+
+### What are the key features?
+
+- **Sophisticated Deterministic Graph** — Acts as the "brain" of the agent, enabling complex reasoning
+- **Controllable Autonomous Agent** — Capable of answering non-trivial questions from custom datasets
+- **Hallucination Prevention** — Ensures answers are solely based on provided data, avoiding AI hallucinations
+- **Multi-step Reasoning** — Breaks down complex queries into manageable sub-tasks
+- **Adaptive Planning** — Continuously updates its plan based on new information
+- **Performance Evaluation** — Uses Ragas metrics for comprehensive quality assessment
+
+### How does the agent work?
+
+1. **PDF Loading and Processing** — Load PDF documents and split into chapters
+2. **Text Preprocessing** — Clean and preprocess text for better summarization and encoding
+3. **Summarization** — Generate extensive summaries using large language models
+4. **Book Quotes Database Creation** — Create database for specific questions needing quotes
+5. **Vector Store Encoding** — Encode content and summaries into vector stores for efficient retrieval
+6. **Question Processing**:
+   - Anonymize question by replacing named entities with variables
+   - Generate high-level plan for the anonymized question
+   - De-anonymize and break down into retrievable/answerable tasks
+7. **Task Execution**:
+   - Decide whether to retrieve information or answer based on context
+   - If retrieving: fetch from vector stores and distill
+   - If answering: generate response using chain-of-thought reasoning
+8. **Verification and Re-planning**:
+   - Verify content is grounded in original context
+   - Re-plan remaining steps based on new information
+9. **Final Answer Generation** — Produce answer using accumulated context and chain-of-thought
+
+### What evaluation metrics are used?
+
+The solution is evaluated using Ragas metrics:
+- **Answer Correctness** — Measures accuracy of the generated answer
+- **Faithfulness** — Ensures answer is grounded in retrieved context
+- **Answer Relevancy** — Measures how relevant the answer is to the question
+- **Context Recall** — Measures coverage of relevant information
+- **Answer Similarity** — Compares generated answer to reference
+
+### How does the agent handle complex questions?
+
+For questions like "How did the protagonist defeat the villain's assistant?", the agent:
+1. Identifies the protagonist
+2. Identifies the villain
+3. Identifies the villain's assistant
+4. Searches for confrontations between protagonist and villain
+5. Deduces the reason for defeating the assistant
+
+This demonstrates sophisticated reasoning beyond simple retrieval.
+
+### What LLM providers are supported?
+
+The agent is built on LangGraph and supports:
+- **OpenAI** — GPT-4, GPT-3.5
+- **Anthropic** — Claude models
+- **Local models** — Via Ollama or other local LLM providers
+- **Any LangChain-compatible provider**
+
+### How do I get started?
+
+1. Clone the repository
+2. Install dependencies: `pip install -r requirements.txt`
+3. Set up your LLM API keys (OpenAI, Anthropic, etc.)
+4. Prepare your PDF documents
+5. Run the agent with your custom questions
+
+See the [comprehensive guide on RAG techniques](https://github.com/NirDiamant/RAG_Techniques) for additional context.
+
+### Can I use custom datasets?
+
+Yes! The agent is designed to work with any PDF documents. Load your custom documents, and the agent will:
+- Process and split them appropriately
+- Create vector stores for efficient retrieval
+- Answer complex questions based solely on your data
+
+### How does hallucination prevention work?
+
+The agent ensures answers are solely based on provided data through:
+- **Verification loops** — Check generated content against original context
+- **Re-planning** — Adjust approach if verification fails
+- **Grounded responses** — Only use retrieved information, not pre-trained knowledge
+
+### What is the anonymization technique?
+
+Questions are anonymized by replacing named entities with variables. This helps:
+- Generate more general plans
+- Avoid bias from pre-trained knowledge about entities
+- De-anonymize after planning to apply to specific context
+
+### Where can I find related tutorials?
+
+- **[Agents Towards Production](https://github.com/NirDiamant/agents-towards-production)** — Horizontal, code-first tutorials covering every step in building production-grade GenAI agents
+- **[RAG Techniques](https://github.com/NirDiamant/RAG_Techniques)** — Comprehensive guide on RAG techniques
+- **[GenAI Agents](https://github.com/NirDiamant/GenAI_Agents)** — Many other AI Agent implementations and tutorials
+
+### What license does this project use?
+
+Apache 2.0 License — open-source, free to use commercially.
+
+### Where can I get help?
+
+- **GitHub Issues**: [github.com/NirDiamant/Controllable-RAG-Agent/issues](https://github.com/NirDiamant/Controllable-RAG-Agent/issues)
+- **Discord**: [Join our community](https://discord.gg/8PSA7s5v)
+- **Twitter**: [@NirDiamantAI](https://twitter.com/NirDiamantAI)
+- **LinkedIn**: [Connect](https://www.linkedin.com/in/nir-diamant-759323134/)
+- **Newsletter**: [DiamantAI Substack](https://diamantai.substack.com) — 20,000+ subscribers
+
