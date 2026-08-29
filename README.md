@@ -217,20 +217,20 @@ The Controllable RAG Agent handles questions requiring multi-hop reasoning and c
 
 ### What are the key features?
 
-- **Sophisticated Deterministic Graph** — Acts as the "brain" of the agent, enabling complex reasoning
-- **Controllable Autonomous Agent** — Capable of answering non-trivial questions from custom datasets
-- **Hallucination Prevention** — Ensures answers are solely based on provided data, avoiding AI hallucinations
-- **Multi-step Reasoning** — Breaks down complex queries into manageable sub-tasks
-- **Adaptive Planning** — Continuously updates its plan based on new information
-- **Performance Evaluation** — Uses Ragas metrics for comprehensive quality assessment
+- **Sophisticated Deterministic Graph**: Acts as the "brain" of the agent, enabling complex reasoning
+- **Controllable Autonomous Agent**: Capable of answering non-trivial questions from custom datasets
+- **Hallucination Prevention**: Ensures answers are solely based on provided data, avoiding AI hallucinations
+- **Multi-step Reasoning**: Breaks down complex queries into manageable sub-tasks
+- **Adaptive Planning**: Continuously updates its plan based on new information
+- **Performance Evaluation**: Uses Ragas metrics for comprehensive quality assessment
 
 ### How does the agent work?
 
-1. **PDF Loading and Processing** — Load PDF documents and split into chapters
-2. **Text Preprocessing** — Clean and preprocess text for better summarization and encoding
-3. **Summarization** — Generate extensive summaries using large language models
-4. **Book Quotes Database Creation** — Create database for specific questions needing quotes
-5. **Vector Store Encoding** — Encode content and summaries into vector stores for efficient retrieval
+1. **PDF Loading and Processing**: Load PDF documents and split into chapters
+2. **Text Preprocessing**: Clean and preprocess text for better summarization and encoding
+3. **Summarization**: Generate extensive summaries using large language models
+4. **Book Quotes Database Creation**: Create database for specific questions needing quotes
+5. **Vector Store Encoding**: Encode content and summaries into vector stores for efficient retrieval
 6. **Question Processing**:
    - Anonymize question by replacing named entities with variables
    - Generate high-level plan for the anonymized question
@@ -242,16 +242,16 @@ The Controllable RAG Agent handles questions requiring multi-hop reasoning and c
 8. **Verification and Re-planning**:
    - Verify content is grounded in original context
    - Re-plan remaining steps based on new information
-9. **Final Answer Generation** — Produce answer using accumulated context and chain-of-thought
+9. **Final Answer Generation**: Produce answer using accumulated context and chain-of-thought
 
 ### What evaluation metrics are used?
 
 The solution is evaluated using Ragas metrics:
-- **Answer Correctness** — Measures accuracy of the generated answer
-- **Faithfulness** — Ensures answer is grounded in retrieved context
-- **Answer Relevancy** — Measures how relevant the answer is to the question
-- **Context Recall** — Measures coverage of relevant information
-- **Answer Similarity** — Compares generated answer to reference
+- **Answer Correctness**: Measures accuracy of the generated answer
+- **Faithfulness**: Ensures answer is grounded in retrieved context
+- **Answer Relevancy**: Measures how relevant the answer is to the question
+- **Context Recall**: Measures coverage of relevant information
+- **Answer Similarity**: Compares generated answer to reference
 
 ### How does the agent handle complex questions?
 
@@ -267,9 +267,9 @@ This demonstrates sophisticated reasoning beyond simple retrieval.
 ### What LLM providers are supported?
 
 The agent is built on LangGraph and supports:
-- **OpenAI** — used by default (`gpt-4o`)
-- **Groq** — wired up in `functions_for_pipeline.py` for fast inference
-- **Any LangChain-compatible provider** — swap the chat model in `functions_for_pipeline.py`
+- **OpenAI**: used by default (`gpt-4o`)
+- **Groq**: wired up in `functions_for_pipeline.py` for fast inference
+- **Any LangChain-compatible provider**: swap the chat model in `functions_for_pipeline.py`
 
 ### How do I get started?
 
@@ -291,9 +291,9 @@ Yes! The agent is designed to work with any PDF documents. Load your custom docu
 ### How does hallucination prevention work?
 
 The agent ensures answers are solely based on provided data through:
-- **Verification loops** — Check generated content against original context
-- **Re-planning** — Adjust approach if verification fails
-- **Grounded responses** — Only use retrieved information, not pre-trained knowledge
+- **Verification loops**: Check generated content against original context
+- **Re-planning**: Adjust approach if verification fails
+- **Grounded responses**: Only use retrieved information, not pre-trained knowledge
 
 ### What is the anonymization technique?
 
@@ -304,13 +304,13 @@ Questions are anonymized by replacing named entities with variables. This helps:
 
 ### Where can I find related tutorials?
 
-- **[Agents Towards Production](https://github.com/NirDiamant/agents-towards-production)** — Horizontal, code-first tutorials covering every step in building production-grade GenAI agents
-- **[RAG Techniques](https://github.com/NirDiamant/RAG_Techniques)** — Comprehensive guide on RAG techniques
-- **[GenAI Agents](https://github.com/NirDiamant/GenAI_Agents)** — Many other AI Agent implementations and tutorials
+- **[Agents Towards Production](https://github.com/NirDiamant/agents-towards-production)**: Horizontal, code-first tutorials covering every step in building production-grade GenAI agents
+- **[RAG Techniques](https://github.com/NirDiamant/RAG_Techniques)**: Comprehensive guide on RAG techniques
+- **[GenAI Agents](https://github.com/NirDiamant/GenAI_Agents)**: Many other AI Agent implementations and tutorials
 
 ### What license does this project use?
 
-Apache 2.0 License — open-source, free to use commercially.
+Apache 2.0 License - open-source, free to use commercially.
 
 ### Where can I get help?
 
@@ -318,5 +318,5 @@ Apache 2.0 License — open-source, free to use commercially.
 - **Discord**: [Join our community](https://discord.gg/cA6Aa4uyDX)
 - **Twitter**: [@NirDiamantAI](https://twitter.com/NirDiamantAI)
 - **LinkedIn**: [Connect](https://www.linkedin.com/in/nir-diamant-759323134/)
-- **Newsletter**: [DiamantAI Substack](https://diamantai.substack.com) — 20,000+ subscribers
+- **Newsletter**: [DiamantAI Substack](https://diamantai.substack.com) - 20,000+ subscribers
 
