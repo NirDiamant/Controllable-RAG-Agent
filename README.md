@@ -133,6 +133,8 @@ The agent's ability to break down and solve such complex queries demonstrates it
    ```
    OPENAI_API_KEY=
    GROQ_API_KEY=
+   FORGE_API_KEY=
+   FORGE_API_BASE=https://api.forge.tensorblock.co/v1
    ```
    you can look at the `.env.example` file for reference.
 
