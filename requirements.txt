@@ -148,7 +148,7 @@ pyee==11.1.0
 Pygments==2.18.0
 pylcs==0.1.1
 pyparsing==3.1.2
-pypdf==4.2.0
+pypdf==6.16.1
 PyPDF2==3.0.1
 pyppeteer
 pysbd==0.3.4
