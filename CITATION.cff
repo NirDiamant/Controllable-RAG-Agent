@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite it as below."
+title: "A Sophisticated Controllable Agent for Complex Retrieval-Augmented Generation Tasks"
+version: "1.0.0"
+date-released: "2024-04-03"
+authors:
+  - family-names: "Diamant"
+    given-names: "Nir"
+repository-code: "https://github.com/NirDiamant/Controllable-RAG-Agent"
+url: "https://github.com/NirDiamant/Controllable-RAG-Agent"
+abstract: >-
+  An advanced Retrieval-Augmented Generation solution for complex question
+  answering. A deterministic graph acts as the brain of a highly
+  controllable autonomous agent that plans, decomposes questions into
+  sub-questions, retrieves across multiple purpose-built vector stores at
+  different granularities, and verifies both retrieved context relevance
+  and answer groundedness before responding.
+keywords:
+  - rag
+  - retrieval-augmented-generation
+  - langgraph
+  - ai-agents
+  - question-answering
+  - hallucination-detection
+  - llm
+license: Apache-2.0

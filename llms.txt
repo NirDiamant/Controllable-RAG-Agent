@@ -1,0 +1,28 @@
+# Controllable RAG Agent
+
+> An advanced Retrieval-Augmented Generation (RAG) solution for complex question answering that plain semantic similarity cannot handle. A deterministic graph acts as the brain of a highly controllable autonomous agent: it plans, decomposes a question into sub-questions, retrieves against three purpose-built vector stores at different granularities (chunks, chapter summaries, quotes), verifies that retrieved context is relevant and that generated answers are grounded, and loops until the question is answered. Demonstrated on the Harry Potter books. A reference implementation to read and adapt rather than a library to install. Authored by Nir Diamant. Licensed Apache 2.0.
+
+## Core Documents
+
+- [README](https://github.com/NirDiamant/Controllable-RAG-Agent/blob/main/README.md): Overview, architecture explanation, demo and setup.
+- [AGENTS](https://github.com/NirDiamant/Controllable-RAG-Agent/blob/main/AGENTS.md): Repository conventions for AI coding agents.
+- [LICENSE](https://github.com/NirDiamant/Controllable-RAG-Agent/blob/main/LICENSE): Apache 2.0.
+
+## Implementation
+
+- [Main agent notebook](https://github.com/NirDiamant/Controllable-RAG-Agent/blob/main/sophisticated_rag_agent_harry_potter.ipynb): The full agent end to end. The place to start.
+- [Graph visualization](https://github.com/NirDiamant/Controllable-RAG-Agent/blob/main/full_graph_visualization.ipynb): Renders the agent graph so the control flow is visible.
+- [functions_for_pipeline.py](https://github.com/NirDiamant/Controllable-RAG-Agent/blob/main/functions_for_pipeline.py): The pipeline stages the graph composes.
+- [helper_functions.py](https://github.com/NirDiamant/Controllable-RAG-Agent/blob/main/helper_functions.py): Loading, chunking, retrieval and formatting utilities.
+- [simulate_agent.py](https://github.com/NirDiamant/Controllable-RAG-Agent/blob/main/simulate_agent.py): Runs the agent non-interactively.
+- [Dockerfile](https://github.com/NirDiamant/Controllable-RAG-Agent/blob/main/dockerfile) and [docker-compose.yml](https://github.com/NirDiamant/Controllable-RAG-Agent/blob/main/docker-compose.yml): Containerized run.
+- [requirements.txt](https://github.com/NirDiamant/Controllable-RAG-Agent/blob/main/requirements.txt): Dependencies.
+
+## Related work by the same author
+
+- [RAG Made Simple](https://diamant-ai.com/rag-made-simple): The book that extends this work. A 400-page visual guide to RAG.
+- [RAG_Techniques](https://github.com/NirDiamant/RAG_Techniques): 41 notebooks covering the broader RAG technique space.
+- [agents-towards-production](https://github.com/NirDiamant/agents-towards-production): Taking agents from prototype to deployed product.
+- [GenAI_Agents](https://github.com/NirDiamant/GenAI_Agents): 59 notebooks implementing GenAI agents.
+- [Newsletter](https://newsletter.diamant-ai.com): Weekly deep dives on GenAI engineering.
+- [Community Discord](https://discord.gg/cA6Aa4uyDX): Questions, contributions and discussion.
