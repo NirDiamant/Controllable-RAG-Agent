@@ -49,7 +49,7 @@ The full reference: a 400-page visual guide that goes deeper than any notebook c
 
 One `npm install` adds the module's AI assistant to your Claude Code, and it guides you through the tutorial as you build.
 
-<a href="https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=course-free-module-cta&target=https%3A%2F%2Fwww.diamant-ai.com%2Fcourses%3Futm_source%3Dgithub%26utm_medium%3Dreadme%26utm_campaign%3Dcontrollable-rag-agent&retarget=0&text=course-free-module-cta"><img src="assets/free-module-button.svg" alt="Claim your free module" width="420"></a>
+<a href="https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=course-free-module-direct&target=https%3A%2F%2Fp2p-course.diamant-ai.com%2Flectures%2F00-present%3Futm_source%3Dgithub%26utm_medium%3Dreadme%26utm_campaign%3Dcontrollable-rag-agent-direct&retarget=0&text=course-free-module-direct"><img src="assets/free-module-button.svg" alt="Claim your free module" width="420"></a>
 
 ### 👉 [**Get the full course**](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=course-full-cta&target=https%3A%2F%2Fwww.diamant-ai.com%2Fcourses%3Futm_source%3Dgithub%26utm_medium%3Dreadme%26utm_campaign%3Dcontrollable-rag-agent&retarget=0&text=course-full-cta)
 
