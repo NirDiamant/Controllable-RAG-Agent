@@ -11,54 +11,16 @@ An advanced Retrieval-Augmented Generation (RAG) solution designed to tackle com
 
 ![Demo](graphs/demo.gif)
 
-<div align="center">
-
-# 📖 [RAG Made Simple: the book that extends this repo](https://diamant-ai.com/rag-made-simple?code=RAGKING)
-
-<a href="https://diamant-ai.com/rag-made-simple?code=RAGKING"><img src="https://raw.githubusercontent.com/NirDiamant/agents-towards-production/main/images/rag_book_best_seller.png" alt="RAG Made Simple - Amazon bestseller in Generative AI" width="500"></a>
-
-The full reference: a 400-page visual guide that goes deeper than any notebook can. The **intuition** behind every technique, **side-by-side comparisons** of when each one wins (and when it quietly fails), and **diagrams** that make the tricky parts finally click.
-
-**1,500+ copies sold · Hit #1 in Generative AI on Amazon at launch · ⭐ 4.6 stars**
-
-📖 **PDF + EPUB · GitHub community price: 33% off with code RAGKING**
-
-### 👉 [**Get RAG Made Simple (33% off with code RAGKING)**](https://diamant-ai.com/rag-made-simple?code=RAGKING)
-
-</div>
-
----
-
-<h2 align="center">🎓 From RAG agents to production</h2>
+<h2 align="center">📖 Go deeper: the book</h2>
 
 <div align="center">
 
-**[Prompt to Production](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=course-free-module-cta&target=https%3A%2F%2Fwww.diamant-ai.com%2Fcourses%3Futm_source%3Dgithub%26utm_medium%3Dreadme%26utm_campaign%3Dcontrollable-rag-agent&retarget=0&text=course-free-module-cta)** - my full course on building software with AI the way professionals do: the methods and paradigms behind reliable, efficient, modular production systems, taught systematically. 17 modules, each pairing a video lecture with a hands-on lab, from your first structured prompt to a working production system.
+<a href="https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&amp;click=book-card-rag-image&amp;target=https%3A%2F%2Fwww.amazon.com%2Fdp%2FB0GWDH8JJL&amp;retarget=0&amp;text=book-card-rag-image"><img src="assets/rag-made-simple-cover.jpg" alt="RAG Made Simple book cover" width="200"></a>
 
-**The course is live.** Every module is out, lecture and lab.
+**RAG Made Simple** - the 400-page visual guide that extends this repo.<br>
+Hit #1 in Generative AI on Amazon at launch
 
-### 🎁 Try it on your own repo, free
-
-Your coding agent starts every session knowing nothing about your project, so it guesses. Paste one line into the agent you already have open, and about fifteen minutes later your repository has a docs layer written from the code itself, plus a card scoring what your agent knew before and after.
-
-We ran it on six repositories you already depend on. Each one was asked five questions about itself, cold, then again after the layer was written. The last column counts statements in that project's **own documentation** that its **own code disproves**:
-
-| repo | before | after | own docs its code disproves |
-|---|---|---|---|
-| fastapi | 2 of 5 | **5 of 5** | 2 |
-| flask | 3 of 5 | **5 of 5** | 6 |
-| django | 3 of 5 | **4 of 5** | 1 |
-| express | 2 of 5 | **4 of 5** | 4 |
-| requests | 2 of 5 | **4 of 5** | 0 |
-| langchain | 5 of 5 | **4 of 5** | 5 |
-
-Flask's six include four documentation examples that raise `TypeError` when you run them. Langchain scored *lower* afterwards, because it already ships a 380-line agent instruction file and the cold read was grading theirs; that row is in the table anyway.
-
-Clone any of those repos, paste the same line, and check the number yourself. No signup.
-
-<a href="https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=course-free-module-direct&target=https%3A%2F%2Fp2p-course.diamant-ai.com%2Flectures%2F00-present%3Futm_source%3Dgithub%26utm_medium%3Dreadme%26utm_campaign%3Dcontrollable-rag-agent-direct&retarget=0&text=course-free-module-direct"><img src="assets/free-module-button.svg" alt="Claim your free module" width="420"></a>
-
-### 👉 [**Get the full course**](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=course-full-cta&target=https%3A%2F%2Fwww.diamant-ai.com%2Fcourses%3Futm_source%3Dgithub%26utm_medium%3Dreadme%26utm_campaign%3Dcontrollable-rag-agent&retarget=0&text=course-full-cta)
+**[Get it on Amazon (paperback · Kindle · free on Kindle Unlimited) →](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=book-card-rag-cta&target=https%3A%2F%2Fwww.amazon.com%2Fdp%2FB0GWDH8JJL&retarget=0&text=book-card-rag-cta)**
 
 </div>
 
@@ -83,7 +45,7 @@ Clone any of those repos, paste the same line, and check the number yourself. No
 
 [![Subscribe to DiamantAI Newsletter](assets/subscribe-button.svg)](https://diamantai.substack.com/?r=336pe4&utm_campaign=pub-share-checklist)
 
-*Join over 20,000 of AI enthusiasts getting unique cutting-edge insights and free tutorials!* ***Plus, subscribers get exclusive early access and special 33% discounts to my book and the upcoming RAG Techniques course!***
+*Join over 20,000 of AI enthusiasts getting unique cutting-edge insights and free tutorials!* ***Plus, subscribers get exclusive early access and special 33% discounts on my books!***
 </div>
 
 [![DiamantAI's newsletter](assets/substack_image.png)](https://diamantai.substack.com/?r=336pe4&utm_campaign=pub-share-checklist)
@@ -230,6 +192,14 @@ Contributions are welcome! Please feel free to submit a pull request or open an 
 ## 🙏 Acknowledgements
 
 Special thanks to Elad Levi for the valuable advice and ideas.
+
+## 📚 More from the same author
+
+**[Agent Memory Made Simple](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=book-footer-am&target=https%3A%2F%2Fwww.amazon.com%2Fdp%2FB0HCRMGHCM&retarget=0&text=book-footer-am)** - the visual guide to memory for AI agents: buffers, vector and graph memory, cognitive architectures and the frameworks in production.
+
+**[Prompt Engineering: Master the Art of AI Interaction](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=book-footer-pe&target=https%3A%2F%2Fwww.amazon.com%2Fdp%2FB0DZ85RPB5&retarget=0&text=book-footer-pe)** - the prompting foundation that makes RAG work better.
+
+**[AI Agents Made Simple](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=book-footer-agents&target=https%3A%2F%2Fwww.amazon.com%2Fdp%2FB0HNXRSRH2&retarget=0&text=book-footer-agents)** - the decision guide to building agents that work: 28 chapters on what each pattern does, what breaks, what it costs, and when it is overkill. No code.
 
 ## 📄 License
 
