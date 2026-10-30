@@ -30,7 +30,7 @@ docarray==0.32.1
 executing==2.0.1
 experimental==0.9.7
 faiss-cpu==1.9.0.post1
-filelock==3.14.0
+filelock==4.2.1
 fonttools==4.53.0
 frozenlist==1.4.1
 fsspec==2024.3.1
