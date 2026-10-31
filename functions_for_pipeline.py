@@ -1,9 +1,9 @@
 from langchain_openai import ChatOpenAI 
 # from langchain_groq import ChatGroq
-from langchain.vectorstores import  FAISS
+from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
-from langchain.prompts import PromptTemplate
-from langchain_core.pydantic_v1 import BaseModel, Field
+from langchain_core.prompts import PromptTemplate
+from pydantic import BaseModel, Field
 from langchain_core.output_parsers import JsonOutputParser
 
 from langgraph.graph import END, StateGraph
@@ -18,6 +18,13 @@ from typing import List, TypedDict
 
 ### Helper functions for the notebook
 from helper_functions import escape_quotes, text_wrap
+
+# One model for every LLM step. OpenAI shuts down gpt-4o on 2027-01-14.
+# gpt-5.4-mini with reasoning_effort="none" behaves like gpt-4o did here: no
+# reasoning tokens, and temperature=0 is accepted. OpenAI's listed replacement,
+# gpt-6-luna, was tried first and dropped: it often returned an empty refusal
+# when asked to filter passages of the book.
+LLM_MODEL = "gpt-5.4-mini"
 
 
 
@@ -56,7 +63,7 @@ def retrieve_context_per_question(state):
     # Retrieve relevant documents
     print("Retrieving relevant chunks...")
     question = state["question"]
-    docs = chunks_query_retriever.get_relevant_documents(question)
+    docs = chunks_query_retriever.invoke(question)
 
     # Concatenate document content
     context = " ".join(doc.page_content for doc in docs)
@@ -64,7 +71,7 @@ def retrieve_context_per_question(state):
 
 
     print("Retrieving relevant chapter summaries...")
-    docs_summaries = chapter_summaries_query_retriever.get_relevant_documents(state["question"])
+    docs_summaries = chapter_summaries_query_retriever.invoke(state["question"])
 
     # Concatenate chapter summaries with citation information
     context_summaries = " ".join(
@@ -72,7 +79,7 @@ def retrieve_context_per_question(state):
     )
 
     print("Retrieving relevant book quotes...")
-    docs_book_quotes = book_quotes_query_retriever.get_relevant_documents(state["question"])
+    docs_book_quotes = book_quotes_query_retriever.invoke(state["question"])
     book_qoutes = " ".join(doc.page_content for doc in docs_book_quotes)
 
 
@@ -103,7 +110,7 @@ def create_keep_only_relevant_content_chain():
     )
 
 
-    keep_only_relevant_content_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    keep_only_relevant_content_llm = ChatOpenAI(temperature=0, model_name=LLM_MODEL, reasoning_effort="none", max_tokens=2000)
     keep_only_relevant_content_chain = keep_only_relevant_content_prompt | keep_only_relevant_content_llm.with_structured_output(KeepRelevantContent)
     return keep_only_relevant_content_chain
 
@@ -141,7 +148,7 @@ def create_question_answer_from_context_cot_chain():
     class QuestionAnswerFromContext(BaseModel):
         answer_based_on_content: str = Field(description="generates an answer to a query based on a given context.")
 
-    question_answer_from_context_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    question_answer_from_context_llm = ChatOpenAI(temperature=0, model_name=LLM_MODEL, reasoning_effort="none", max_tokens=2000)
 
 
     question_answer_cot_prompt_template = """ 
@@ -236,8 +243,8 @@ def create_is_relevant_content_chain():
         explanation: str = Field(description="An explanation of why the document is relevant or not.")
 
     # is_relevant_json_parser = JsonOutputParser(pydantic_object=Relevance)
-    # is_relevant_llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=groq_api_key, max_tokens=4000)
-    is_relevant_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    # is_relevant_llm = ChatGroq(temperature=0, model_name="openai/gpt-oss-120b", groq_api_key=groq_api_key, max_tokens=4000)
+    is_relevant_llm = ChatOpenAI(temperature=0, model_name=LLM_MODEL, reasoning_effort="none", max_tokens=2000)
 
     is_relevant_content_prompt = PromptTemplate(
         template=is_relevant_content_prompt_template,
@@ -284,7 +291,7 @@ def create_is_grounded_on_facts_chain():
         """
         grounded_on_facts: bool = Field(description="Answer is grounded in the facts, 'yes' or 'no'")
 
-    is_grounded_on_facts_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    is_grounded_on_facts_llm = ChatOpenAI(temperature=0, model_name=LLM_MODEL, reasoning_effort="none", max_tokens=2000)
     is_grounded_on_facts_prompt_template = """You are a fact-checker that determines if the given answer {answer} is grounded in the given context {context}
     you don't mind if it doesn't make sense, as long as it is grounded in the context.
     output a json containing the answer to the question, and appart from the json format don't output any additional text.
@@ -314,8 +321,8 @@ def create_can_be_answered_chain():
         # partial_variables={"format_instructions": can_be_answered_json_parser.get_format_instructions()},
     )
 
-    # can_be_answered_llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=groq_api_key, max_tokens=4000)
-    can_be_answered_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    # can_be_answered_llm = ChatGroq(temperature=0, model_name="openai/gpt-oss-120b", groq_api_key=groq_api_key, max_tokens=4000)
+    can_be_answered_llm = ChatOpenAI(temperature=0, model_name=LLM_MODEL, reasoning_effort="none", max_tokens=2000)
     can_be_answered_chain = answer_question_prompt | can_be_answered_llm.with_structured_output(QuestionAnswer)
     return can_be_answered_chain
 
@@ -339,8 +346,8 @@ def create_is_distilled_content_grounded_on_content_chain():
         # partial_variables={"format_instructions": is_distilled_content_grounded_on_content_json_parser.get_format_instructions()},
     )
 
-    # is_distilled_content_grounded_on_content_llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=groq_api_key, max_tokens=4000)
-    is_distilled_content_grounded_on_content_llm =ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    # is_distilled_content_grounded_on_content_llm = ChatGroq(temperature=0, model_name="openai/gpt-oss-120b", groq_api_key=groq_api_key, max_tokens=4000)
+    is_distilled_content_grounded_on_content_llm =ChatOpenAI(temperature=0, model_name=LLM_MODEL, reasoning_effort="none", max_tokens=2000)
 
     is_distilled_content_grounded_on_content_chain = is_distilled_content_grounded_on_content_prompt | is_distilled_content_grounded_on_content_llm.with_structured_output(IsDistilledContentGroundedOnContent)
     return is_distilled_content_grounded_on_content_chain
@@ -391,7 +398,7 @@ def retrieve_chunks_context_per_question(state):
     # Retrieve relevant documents
     print("Retrieving relevant chunks...")
     question = state["question"]
-    docs = chunks_query_retriever.get_relevant_documents(question)
+    docs = chunks_query_retriever.invoke(question)
 
     # Concatenate document content
     context = " ".join(doc.page_content for doc in docs)
@@ -403,7 +410,7 @@ def retrieve_summaries_context_per_question(state):
     print("Retrieving relevant chapter summaries...")
     question = state["question"]
 
-    docs_summaries = chapter_summaries_query_retriever.get_relevant_documents(state["question"])
+    docs_summaries = chapter_summaries_query_retriever.invoke(state["question"])
 
     # Concatenate chapter summaries with citation information
     context_summaries = " ".join(
@@ -416,7 +423,7 @@ def retrieve_book_quotes_context_per_question(state):
     question = state["question"]
 
     print("Retrieving relevant book quotes...")
-    docs_book_quotes = book_quotes_query_retriever.get_relevant_documents(state["question"])
+    docs_book_quotes = book_quotes_query_retriever.invoke(state["question"])
     book_qoutes = " ".join(doc.page_content for doc in docs_book_quotes)
     book_qoutes_context = escape_quotes(book_qoutes)
 
@@ -594,7 +601,7 @@ def create_plan_chain():
         input_variables=["question"], 
         )
 
-    planner_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    planner_llm = ChatOpenAI(temperature=0, model_name=LLM_MODEL, reasoning_effort="none", max_tokens=2000)
 
     planner = planner_prompt | planner_llm.with_structured_output(Plan)
     return planner
@@ -619,7 +626,7 @@ def create_break_down_plan_chain():
         input_variables=["plan"],
     )
 
-    break_down_plan_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    break_down_plan_llm = ChatOpenAI(temperature=0, model_name=LLM_MODEL, reasoning_effort="none", max_tokens=2000)
 
     break_down_plan_chain = break_down_plan_prompt | break_down_plan_llm.with_structured_output(Plan)
 
@@ -665,7 +672,7 @@ def create_replanner_chain():
         # partial_variables={"format_instructions": act_possible_results_parser.get_format_instructions()},
     )
 
-    replanner_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    replanner_llm = ChatOpenAI(temperature=0, model_name=LLM_MODEL, reasoning_effort="none", max_tokens=2000)
 
 
 
@@ -706,7 +713,7 @@ def create_task_handler_chain():
         input_variables=["curr_task", "aggregated_context", "last_tool" "past_steps", "question"],
     )
 
-    task_handler_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    task_handler_llm = ChatOpenAI(temperature=0, model_name=LLM_MODEL, reasoning_effort="none", max_tokens=2000)
     task_handler_chain = task_handler_prompt | task_handler_llm.with_structured_output(TaskHandlerOutput)
     return task_handler_chain
 
@@ -729,6 +736,7 @@ def create_anonymize_question_chain():
             the output should be \"how did the X played with the Y and Z?\" and the mapping should be {{\"X\": \"bad guy\", \"Y\": \"alex\", \"Z\": \"rony\"}}```
     you must replace all name entities in the input with variables, and remember the mapping of the original name entities to the variables.
     output the anonymized question and the mapping as two separate fields in a json format as described here, without any additional text apart from the json format.
+    {format_instructions}
    """
 
 
@@ -739,7 +747,7 @@ def create_anonymize_question_chain():
         partial_variables={"format_instructions": anonymize_question_parser.get_format_instructions()},
     )
 
-    anonymize_question_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    anonymize_question_llm = ChatOpenAI(temperature=0, model_name=LLM_MODEL, reasoning_effort="none", max_tokens=2000)
     anonymize_question_chain = anonymize_question_prompt | anonymize_question_llm | anonymize_question_parser
     return anonymize_question_chain
 
@@ -747,7 +755,7 @@ def create_anonymize_question_chain():
 def create_deanonymize_plan_chain():
     class DeAnonymizePlan(BaseModel):
         """Possible results of the action."""
-        plan: List = Field(description="Plan to follow in future. with all the variables replaced with the mapped words.")
+        plan: List[str] = Field(description="Plan to follow in future. with all the variables replaced with the mapped words.")
 
 
     de_anonymize_plan_prompt_template = """ you receive a list of tasks: {plan}, where some of the words are replaced with mapped variables. you also receive
@@ -761,7 +769,7 @@ def create_deanonymize_plan_chain():
         input_variables=["plan", "mapping"],
     )
 
-    de_anonymize_plan_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    de_anonymize_plan_llm = ChatOpenAI(temperature=0, model_name=LLM_MODEL, reasoning_effort="none", max_tokens=2000)
     de_anonymize_plan_chain = de_anonymize_plan_prompt | de_anonymize_plan_llm.with_structured_output(DeAnonymizePlan)
     return de_anonymize_plan_chain
 
@@ -782,7 +790,7 @@ def create_can_be_answered_already_chain():
         input_variables=["question","context"],
     )
 
-    can_be_answered_already_llm = ChatOpenAI(temperature=0, model_name="gpt-4o", max_tokens=2000)
+    can_be_answered_already_llm = ChatOpenAI(temperature=0, model_name=LLM_MODEL, reasoning_effort="none", max_tokens=2000)
     can_be_answered_already_chain = can_be_answered_already_prompt | can_be_answered_already_llm.with_structured_output(CanBeAnsweredAlready)
     return can_be_answered_already_chain
 
@@ -812,14 +820,14 @@ def run_task_handler_chain(state: PlanExecute):
     print(state["plan"])
     pprint("--------------------") 
 
-    if not state['past_steps']:
+    if not state.get('past_steps'):
         state["past_steps"] = []
 
     curr_task = state["plan"][0]
 
     inputs = {"curr_task": curr_task,
-               "aggregated_context": state["aggregated_context"],
-                "last_tool": state["tool"],
+               "aggregated_context": state.get("aggregated_context"),
+                "last_tool": state.get("tool"),
                 "past_steps": state["past_steps"],
                 "question": state["question"]}
     
@@ -885,11 +893,11 @@ def run_qualitative_chunks_retrieval_workflow(state):
     print("Running the qualitative chunks retrieval workflow...")
     question = state["query_to_retrieve_or_answer"]
     inputs = {"question": question}
-    for output in qualitative_chunks_retrieval_workflow_app.stream(inputs):
+    for output in qualitative_chunks_retrieval_workflow_app.stream(inputs, stream_mode="values"):
         for _, _ in output.items():
             pass 
         pprint("--------------------")
-    if not state["aggregated_context"]:
+    if not state.get("aggregated_context"):
         state["aggregated_context"] = ""
     state["aggregated_context"] += output['relevant_context']
     return state
@@ -906,11 +914,11 @@ def run_qualitative_summaries_retrieval_workflow(state):
     print("Running the qualitative summaries retrieval workflow...")
     question = state["query_to_retrieve_or_answer"]
     inputs = {"question": question}
-    for output in qualitative_summaries_retrieval_workflow_app.stream(inputs):
+    for output in qualitative_summaries_retrieval_workflow_app.stream(inputs, stream_mode="values"):
         for _, _ in output.items():
             pass 
         pprint("--------------------")
-    if not state["aggregated_context"]:
+    if not state.get("aggregated_context"):
         state["aggregated_context"] = ""
     state["aggregated_context"] += output['relevant_context']
     return state
@@ -927,11 +935,11 @@ def run_qualitative_book_quotes_retrieval_workflow(state):
     print("Running the qualitative book quotes retrieval workflow...")
     question = state["query_to_retrieve_or_answer"]
     inputs = {"question": question}
-    for output in qualitative_book_quotes_retrieval_workflow_app.stream(inputs):
+    for output in qualitative_book_quotes_retrieval_workflow_app.stream(inputs, stream_mode="values"):
         for _, _ in output.items():
             pass 
         pprint("--------------------")
-    if not state["aggregated_context"]:
+    if not state.get("aggregated_context"):
         state["aggregated_context"] = ""
     state["aggregated_context"] += output['relevant_context']
     return state
@@ -951,11 +959,11 @@ def run_qualtative_answer_workflow(state):
     question = state["query_to_retrieve_or_answer"]
     context = state["curr_context"]
     inputs = {"question": question, "context": context}
-    for output in qualitative_answer_workflow_app.stream(inputs):
+    for output in qualitative_answer_workflow_app.stream(inputs, stream_mode="values"):
         for _, _ in output.items():
             pass 
         pprint("--------------------")
-    if not state["aggregated_context"]:
+    if not state.get("aggregated_context"):
         state["aggregated_context"] = ""
     state["aggregated_context"] += output["answer"]
     return state
@@ -973,7 +981,7 @@ def run_qualtative_answer_workflow_for_final_answer(state):
     question = state["question"]
     context = state["aggregated_context"]
     inputs = {"question": question, "context": context}
-    for output in qualitative_answer_workflow_app.stream(inputs):
+    for output in qualitative_answer_workflow_app.stream(inputs, stream_mode="values"):
         for _, value in output.items():
             pass  
         pprint("--------------------")
