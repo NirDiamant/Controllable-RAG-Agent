@@ -129,7 +129,7 @@ The agent's ability to break down and solve such complex queries demonstrates it
 
 ### Prerequisites
 
-- Python 3.8+
+- Python 3.11+
 - API key for your chosen LLM provider
 
 ### Installation (without Docker)
@@ -203,13 +203,21 @@ Contributions are welcome! Please feel free to submit a pull request or open an 
 
 Special thanks to Elad Levi for the valuable advice and ideas.
 
-## 📚 More from the same author
+## 📚 More from DiamantAI
+
+**Open-source tutorials:** [RAG Techniques](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=footer-rag-techniques&target=https%3A%2F%2Fgithub.com%2FNirDiamant%2FRAG_Techniques&retarget=0&text=footer-rag-techniques) · [GenAI Agents](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=footer-genai-agents&target=https%3A%2F%2Fgithub.com%2FNirDiamant%2FGenAI_Agents&retarget=0&text=footer-genai-agents) · [Agents Towards Production](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=footer-agents-towards-production&target=https%3A%2F%2Fgithub.com%2FNirDiamant%2Fagents-towards-production&retarget=0&text=footer-agents-towards-production) · [Prompt Engineering](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=footer-prompt-engineering&target=https%3A%2F%2Fgithub.com%2FNirDiamant%2FPrompt_Engineering&retarget=0&text=footer-prompt-engineering) · [Agent Memory Techniques](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=footer-agent-memory-techniques&target=https%3A%2F%2Fgithub.com%2FNirDiamant%2FAgent_Memory_Techniques&retarget=0&text=footer-agent-memory-techniques)
+
+**Books on Amazon:**
+
+**[RAG Made Simple](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=book-footer-rag&target=https%3A%2F%2Fwww.amazon.com%2Fdp%2FB0GWDH8JJL&retarget=0&text=book-footer-rag)** - the 400-page visual guide to retrieval-augmented generation: 22 techniques, with side-by-side comparisons and diagrams.
 
 **[Agent Memory Made Simple](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=book-footer-am&target=https%3A%2F%2Fwww.amazon.com%2Fdp%2FB0HCRMGHCM&retarget=0&text=book-footer-am)** - the visual guide to memory for AI agents: buffers, vector and graph memory, cognitive architectures and the frameworks in production.
 
 **[Prompt Engineering: Master the Art of AI Interaction](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=book-footer-pe&target=https%3A%2F%2Fwww.amazon.com%2Fdp%2FB0DZ85RPB5&retarget=0&text=book-footer-pe)** - the prompting foundation that makes RAG work better.
 
 **[AI Agents Made Simple](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=book-footer-agents&target=https%3A%2F%2Fwww.amazon.com%2Fdp%2FB0HNXRSRH2&retarget=0&text=book-footer-agents)** - the decision guide to building agents that work: 28 chapters on what each pattern does, what breaks, what it costs, and when it is overkill. No code.
+
+**Keep learning:** [Newsletter](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=footer-newsletter&target=https%3A%2F%2Fnewsletter.diamant-ai.com&retarget=0&text=footer-newsletter) · [YouTube](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=footer-youtube&target=https%3A%2F%2Fwww.youtube.com%2F%40DiamantAI&retarget=0&text=footer-youtube) · [Discord](https://discord.gg/cA6Aa4uyDX) · [diamant-ai.com](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=footer-website&target=https%3A%2F%2Fdiamant-ai.com&retarget=0&text=footer-website) · [Course](https://europe-west1-rag-techniques-views-tracker.cloudfunctions.net/rag-techniques-tracker?notebook=controllable-rag-agent--readme&click=footer-course&target=https%3A%2F%2Fdiamant-ai.com%2Fcourses&retarget=0&text=footer-course)
 
 ## 📄 License
 
@@ -286,7 +294,7 @@ This demonstrates sophisticated reasoning beyond simple retrieval.
 ### What LLM providers are supported?
 
 The agent is built on LangGraph and supports:
-- **OpenAI**: used by default (`gpt-4o`)
+- **OpenAI**: used by default (`gpt-5.4-mini`, set once as `LLM_MODEL`)
 - **Groq**: wired up in `functions_for_pipeline.py` for fast inference
 - **Any LangChain-compatible provider**: swap the chat model in `functions_for_pipeline.py`
 
