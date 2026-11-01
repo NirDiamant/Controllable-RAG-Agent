@@ -4,7 +4,7 @@
 # LangChain 1.x and LangGraph 1.x
 langchain-core==1.7.3
 langchain-classic==1.0.8          # load_summarize_chain
-langchain-community==0.4.1        # FAISS, PyPDFLoader. 0.4.2 removed a module that ragas 0.4.3 still imports
+langchain-community==0.4.2        # FAISS, PyPDFLoader. 0.4.2 removed a module that ragas 0.4.3 still imports
 langchain-openai==1.7.3
 langchain-groq==1.1.3
 langchain-text-splitters==1.1.3
